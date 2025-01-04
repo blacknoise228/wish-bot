@@ -1,0 +1,14 @@
+app:
+  environment: dev
+postgres:
+  host: localhost:5432
+  database: wishbot
+  userName: root
+  password: password
+  sslMode: disable
+api:
+  port: "8080"
+telegram:
+  token: kek
+  admins: [855588888, 7777777777]
+  
