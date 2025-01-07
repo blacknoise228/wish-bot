@@ -12,7 +12,9 @@ services:
     restart: always
 
   wishbot:
-    image: ghcr.io/blacknoise228/wish-bot:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       - TZ=Asia/Almaty
       - WISHBOT_TELEGRAM_TOKEN=7198871252:AAGvf9Hk8XHa43wLeXu8dtX1CxbqG6stz8o
