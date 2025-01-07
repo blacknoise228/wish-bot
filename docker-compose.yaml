@@ -12,11 +12,12 @@ services:
     restart: always
 
   wishbot:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/blacknoise228/wish-bot:latest
     environment:
       - TZ=Asia/Almaty
+      - WISHBOT_TELEGRAM_TOKEN=7198871252:AAGvf9Hk8XHa43wLeXu8dtX1CxbqG6stz8o
+    depends_on:
+      - postgresdb
     ports:
       - "8080:8080"
     restart: always

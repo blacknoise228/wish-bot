@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN go build -o wish-bot
+RUN go mod tidy && go build -o wish-bot
 
 FROM alpine:latest
 
