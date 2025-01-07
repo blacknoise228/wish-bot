@@ -11,6 +11,6 @@ postgres:
 api:
   port: "8080"
 telegram:
-  token: 7198871252:AAGvf9Hk8XHa43wLeXu8dtX1CxbqG6stz8o
+  token: 1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   admins: [855588888, 7777777777]
   
