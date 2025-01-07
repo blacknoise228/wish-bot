@@ -19,8 +19,8 @@ INSERT INTO friends (
 `
 
 type CreateFriendshipParams struct {
-	ChatID   int32 `json:"chat_id"`
-	FriendID int32 `json:"friend_id"`
+	ChatID   int64 `json:"chat_id"`
+	FriendID int64 `json:"friend_id"`
 }
 
 func (q *Queries) CreateFriendship(ctx context.Context, arg CreateFriendshipParams) (Friend, error) {
@@ -41,8 +41,8 @@ WHERE chat_id = $1 AND friend_id = $2
 `
 
 type DeleteFriendshipParams struct {
-	ChatID   int32 `json:"chat_id"`
-	FriendID int32 `json:"friend_id"`
+	ChatID   int64 `json:"chat_id"`
+	FriendID int64 `json:"friend_id"`
 }
 
 func (q *Queries) DeleteFriendship(ctx context.Context, arg DeleteFriendshipParams) error {
@@ -60,10 +60,10 @@ WHERE f.chat_id = $1 AND f.status = 1
 
 type GetAprovedFriendshipsRow struct {
 	Username string `json:"username"`
-	FriendID int32  `json:"friend_id"`
+	FriendID int64  `json:"friend_id"`
 }
 
-func (q *Queries) GetAprovedFriendships(ctx context.Context, chatID int32) ([]GetAprovedFriendshipsRow, error) {
+func (q *Queries) GetAprovedFriendships(ctx context.Context, chatID int64) ([]GetAprovedFriendshipsRow, error) {
 	rows, err := q.db.Query(ctx, getAprovedFriendships, chatID)
 	if err != nil {
 		return nil, err
@@ -89,8 +89,8 @@ WHERE chat_id = $1 AND friend_id = $2 LIMIT 1
 `
 
 type GetFriendshipParams struct {
-	ChatID   int32 `json:"chat_id"`
-	FriendID int32 `json:"friend_id"`
+	ChatID   int64 `json:"chat_id"`
+	FriendID int64 `json:"friend_id"`
 }
 
 func (q *Queries) GetFriendship(ctx context.Context, arg GetFriendshipParams) (Friend, error) {
@@ -106,20 +106,21 @@ func (q *Queries) GetFriendship(ctx context.Context, arg GetFriendshipParams) (F
 }
 
 const getPendingFriendships = `-- name: GetPendingFriendships :many
-SELECT u.username, f.friend_id, d.status_name
+SELECT u.username, f.friend_id, d.status_name, f.chat_id
 FROM friends f
 JOIN users u ON u.chat_id = f.friend_id
 JOIN dim_friend_status d ON d.id = f.status
-WHERE f.chat_id = $1 AND f.status != 1
+WHERE f.chat_id = $1 OR f.friend_id = $1 AND f.status != 1
 `
 
 type GetPendingFriendshipsRow struct {
 	Username   string `json:"username"`
-	FriendID   int32  `json:"friend_id"`
+	FriendID   int64  `json:"friend_id"`
 	StatusName string `json:"status_name"`
+	ChatID     int64  `json:"chat_id"`
 }
 
-func (q *Queries) GetPendingFriendships(ctx context.Context, chatID int32) ([]GetPendingFriendshipsRow, error) {
+func (q *Queries) GetPendingFriendships(ctx context.Context, chatID int64) ([]GetPendingFriendshipsRow, error) {
 	rows, err := q.db.Query(ctx, getPendingFriendships, chatID)
 	if err != nil {
 		return nil, err
@@ -128,7 +129,12 @@ func (q *Queries) GetPendingFriendships(ctx context.Context, chatID int32) ([]Ge
 	items := []GetPendingFriendshipsRow{}
 	for rows.Next() {
 		var i GetPendingFriendshipsRow
-		if err := rows.Scan(&i.Username, &i.FriendID, &i.StatusName); err != nil {
+		if err := rows.Scan(
+			&i.Username,
+			&i.FriendID,
+			&i.StatusName,
+			&i.ChatID,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -148,8 +154,8 @@ RETURNING chat_id, friend_id, status, created_at
 
 type UpdateFriendshipStatusParams struct {
 	Status   int32 `json:"status"`
-	ChatID   int32 `json:"chat_id"`
-	FriendID int32 `json:"friend_id"`
+	ChatID   int64 `json:"chat_id"`
+	FriendID int64 `json:"friend_id"`
 }
 
 func (q *Queries) UpdateFriendshipStatus(ctx context.Context, arg UpdateFriendshipStatusParams) (Friend, error) {

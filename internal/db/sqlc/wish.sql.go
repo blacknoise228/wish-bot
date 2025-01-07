@@ -22,10 +22,10 @@ INSERT INTO wish (
 `
 
 type CreateWishParams struct {
-	ChatID      int32  `json:"chat_id"`
+	ChatID      int64  `json:"chat_id"`
 	Description string `json:"description"`
 	Link        string `json:"link"`
-	Status      string `json:"status"`
+	Status      int32  `json:"status"`
 }
 
 func (q *Queries) CreateWish(ctx context.Context, arg CreateWishParams) (Wish, error) {
@@ -53,7 +53,7 @@ WHERE chat_id = $1 AND id = $2
 `
 
 type DeleteWishParams struct {
-	ChatID int32 `json:"chat_id"`
+	ChatID int64 `json:"chat_id"`
 	ID     int32 `json:"id"`
 }
 
@@ -63,26 +63,44 @@ func (q *Queries) DeleteWish(ctx context.Context, arg DeleteWishParams) error {
 }
 
 const getWishesForUser = `-- name: GetWishesForUser :many
-SELECT id, chat_id, created_at, description, link, status FROM wish
-WHERE chat_id = $1
+SELECT 
+    w.description, 
+    w.link, 
+    d.status_name, 
+    w.id, 
+    w.created_at, 
+    u.username 
+FROM wish w
+JOIN users u ON w.chat_id = u.chat_id
+JOIN dim_wish_status d ON w.status = d.id
+WHERE w.chat_id = $1
 `
 
-func (q *Queries) GetWishesForUser(ctx context.Context, chatID int32) ([]Wish, error) {
+type GetWishesForUserRow struct {
+	Description string    `json:"description"`
+	Link        string    `json:"link"`
+	StatusName  string    `json:"status_name"`
+	ID          int32     `json:"id"`
+	CreatedAt   time.Time `json:"created_at"`
+	Username    string    `json:"username"`
+}
+
+func (q *Queries) GetWishesForUser(ctx context.Context, chatID int64) ([]GetWishesForUserRow, error) {
 	rows, err := q.db.Query(ctx, getWishesForUser, chatID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Wish{}
+	items := []GetWishesForUserRow{}
 	for rows.Next() {
-		var i Wish
+		var i GetWishesForUserRow
 		if err := rows.Scan(
-			&i.ID,
-			&i.ChatID,
-			&i.CreatedAt,
 			&i.Description,
 			&i.Link,
-			&i.Status,
+			&i.StatusName,
+			&i.ID,
+			&i.CreatedAt,
+			&i.Username,
 		); err != nil {
 			return nil, err
 		}
@@ -101,22 +119,24 @@ JOIN users u ON w.chat_id = u.chat_id
 JOIN dim_wish_status d ON w.status = d.id
 WHERE w.chat_id = $1
   AND (
-      w.status = 1
-      OR EXISTS (
-          SELECT 1
-          FROM friends f
-          WHERE (
-              (f.chat_id = $2 AND f.friend_id = w.chat_id)
-              OR (f.chat_id = w.chat_id AND f.friend_id = $2)
+      w.status = 1 
+      OR (
+          EXISTS (
+              SELECT 1
+              FROM friends f
+              WHERE (
+                  (f.chat_id = $2 AND f.friend_id = w.chat_id)
+                  OR (f.chat_id = w.chat_id AND f.friend_id = $2)
+              )
+              AND f.status = 1 
           )
-          AND f.status = 1
       )
   )
 `
 
 type GetWishesPublicParams struct {
-	ChatID   int32 `json:"chat_id"`
-	ChatID_2 int32 `json:"chat_id_2"`
+	ChatID   int64 `json:"chat_id"`
+	ChatID_2 int64 `json:"chat_id_2"`
 }
 
 type GetWishesPublicRow struct {
@@ -166,8 +186,8 @@ RETURNING id, chat_id, created_at, description, link, status
 type UpdateWishParams struct {
 	Description string `json:"description"`
 	Link        string `json:"link"`
-	Status      string `json:"status"`
-	ChatID      int32  `json:"chat_id"`
+	Status      int32  `json:"status"`
+	ChatID      int64  `json:"chat_id"`
 	ID          int32  `json:"id"`
 }
 
@@ -200,9 +220,9 @@ RETURNING id, chat_id, created_at, description, link, status
 `
 
 type UpdateWishStatusParams struct {
-	Status string `json:"status"`
-	ChatID int32  `json:"chat_id"`
-	ID     int32  `json:"id"`
+	Status int32 `json:"status"`
+	ChatID int64 `json:"chat_id"`
+	ID     int32 `json:"id"`
 }
 
 func (q *Queries) UpdateWishStatus(ctx context.Context, arg UpdateWishStatusParams) (Wish, error) {

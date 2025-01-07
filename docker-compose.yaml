@@ -1,9 +1,27 @@
 services:
-  postgres:
+  postgresdb:
     image: postgres:17-alpine3.20
     environment: 
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=wishbot
-    ports: 
-      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data  
+    ports:
+      - "5434:5434"
+    restart: always
+
+  wishbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - TZ=Asia/Almaty
+    ports:
+      - "8080:8080"
+    restart: always
+    volumes:
+      - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro
+
+volumes:
+  db_data:    

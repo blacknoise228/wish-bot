@@ -13,13 +13,14 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateWish(ctx context.Context, arg CreateWishParams) (Wish, error)
 	DeleteFriendship(ctx context.Context, arg DeleteFriendshipParams) error
-	DeleteUser(ctx context.Context, chatID int32) error
+	DeleteUser(ctx context.Context, chatID int64) error
 	DeleteWish(ctx context.Context, arg DeleteWishParams) error
-	GetAprovedFriendships(ctx context.Context, chatID int32) ([]GetAprovedFriendshipsRow, error)
+	GetAprovedFriendships(ctx context.Context, chatID int64) ([]GetAprovedFriendshipsRow, error)
 	GetFriendship(ctx context.Context, arg GetFriendshipParams) (Friend, error)
-	GetPendingFriendships(ctx context.Context, chatID int32) ([]GetPendingFriendshipsRow, error)
-	GetUser(ctx context.Context, chatID int32) (User, error)
-	GetWishesForUser(ctx context.Context, chatID int32) ([]Wish, error)
+	GetPendingFriendships(ctx context.Context, chatID int64) ([]GetPendingFriendshipsRow, error)
+	GetUser(ctx context.Context, chatID int64) (User, error)
+	GetUserByUsername(ctx context.Context, username string) (User, error)
+	GetWishesForUser(ctx context.Context, chatID int64) ([]GetWishesForUserRow, error)
 	GetWishesPublic(ctx context.Context, arg GetWishesPublicParams) ([]GetWishesPublicRow, error)
 	UpdateFriendshipStatus(ctx context.Context, arg UpdateFriendshipStatusParams) (Friend, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)

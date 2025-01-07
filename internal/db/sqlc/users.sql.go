@@ -20,7 +20,7 @@ INSERT INTO users (
 
 type CreateUserParams struct {
 	Username string `json:"username"`
-	ChatID   int32  `json:"chat_id"`
+	ChatID   int64  `json:"chat_id"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -35,7 +35,7 @@ DELETE FROM users
 WHERE chat_id = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, chatID int32) error {
+func (q *Queries) DeleteUser(ctx context.Context, chatID int64) error {
 	_, err := q.db.Exec(ctx, deleteUser, chatID)
 	return err
 }
@@ -45,8 +45,20 @@ SELECT username, chat_id, created_at FROM users
 WHERE chat_id = $1 LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, chatID int32) (User, error) {
+func (q *Queries) GetUser(ctx context.Context, chatID int64) (User, error) {
 	row := q.db.QueryRow(ctx, getUser, chatID)
+	var i User
+	err := row.Scan(&i.Username, &i.ChatID, &i.CreatedAt)
+	return i, err
+}
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT username, chat_id, created_at FROM users
+WHERE username = $1 LIMIT 1
+`
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByUsername, username)
 	var i User
 	err := row.Scan(&i.Username, &i.ChatID, &i.CreatedAt)
 	return i, err
@@ -61,7 +73,7 @@ RETURNING username, chat_id, created_at
 
 type UpdateUserParams struct {
 	Username string `json:"username"`
-	ChatID   int32  `json:"chat_id"`
+	ChatID   int64  `json:"chat_id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

@@ -9,8 +9,18 @@ INSERT INTO wish (
 ) RETURNING *;
 
 -- name: GetWishesForUser :many
-SELECT * FROM wish
-WHERE chat_id = $1;
+SELECT 
+    w.description, 
+    w.link, 
+    d.status_name, 
+    w.id, 
+    w.created_at, 
+    u.username 
+FROM wish w
+JOIN users u ON w.chat_id = u.chat_id
+JOIN dim_wish_status d ON w.status = d.id
+WHERE w.chat_id = $1;
+
 
 -- name: GetWishesPublic :many
 SELECT w.description, w.link, d.status_name, w.created_at, u.username
@@ -19,17 +29,20 @@ JOIN users u ON w.chat_id = u.chat_id
 JOIN dim_wish_status d ON w.status = d.id
 WHERE w.chat_id = $1
   AND (
-      w.status = 1
-      OR EXISTS (
-          SELECT 1
-          FROM friends f
-          WHERE (
-              (f.chat_id = $2 AND f.friend_id = w.chat_id)
-              OR (f.chat_id = w.chat_id AND f.friend_id = $2)
+      w.status = 1 
+      OR (
+          EXISTS (
+              SELECT 1
+              FROM friends f
+              WHERE (
+                  (f.chat_id = $2 AND f.friend_id = w.chat_id)
+                  OR (f.chat_id = w.chat_id AND f.friend_id = $2)
+              )
+              AND f.status = 1 
           )
-          AND f.status = 1
       )
   );
+
 
 -- name: DeleteWish :exec
 DELETE FROM wish

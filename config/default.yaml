@@ -9,6 +9,6 @@ postgres:
 api:
   port: "8080"
 telegram:
-  token: kek
+  token: xxxxx
   admins: [855588888, 7777777777]
   

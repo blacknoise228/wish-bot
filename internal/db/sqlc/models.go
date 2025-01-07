@@ -19,23 +19,23 @@ type DimWishStatus struct {
 }
 
 type Friend struct {
-	ChatID    int32     `json:"chat_id"`
-	FriendID  int32     `json:"friend_id"`
+	ChatID    int64     `json:"chat_id"`
+	FriendID  int64     `json:"friend_id"`
 	Status    int32     `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type User struct {
 	Username  string    `json:"username"`
-	ChatID    int32     `json:"chat_id"`
+	ChatID    int64     `json:"chat_id"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type Wish struct {
 	ID          int32     `json:"id"`
-	ChatID      int32     `json:"chat_id"`
+	ChatID      int64     `json:"chat_id"`
 	CreatedAt   time.Time `json:"created_at"`
 	Description string    `json:"description"`
 	Link        string    `json:"link"`
-	Status      string    `json:"status"`
+	Status      int32     `json:"status"`
 }

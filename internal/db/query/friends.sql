@@ -18,11 +18,11 @@ JOIN dim_friend_status d ON d.id = f.status
 WHERE f.chat_id = $1 AND f.status = 1;
 
 -- name: GetPendingFriendships :many
-SELECT u.username, f.friend_id, d.status_name
+SELECT u.username, f.friend_id, d.status_name, f.chat_id
 FROM friends f
 JOIN users u ON u.chat_id = f.friend_id
 JOIN dim_friend_status d ON d.id = f.status
-WHERE f.chat_id = $1 AND f.status != 1;
+WHERE f.chat_id = $1 OR f.friend_id = $1 AND f.status != 1;
 
 -- name: DeleteFriendship :exec
 DELETE FROM friends
