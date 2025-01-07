@@ -8,20 +8,19 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data  
     ports:
-      - "5434:5434"
+      - "6432:6432"
     restart: always
 
   wishbot:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/blacknoise228/wish-bot:latest
     environment:
       - TZ=Asia/Almaty
       - WISHBOT_TELEGRAM_TOKEN=7198871252:AAGvf9Hk8XHa43wLeXu8dtX1CxbqG6stz8o
+      - WISHBOT_POSTGRES_HOST=postgresdb:6432
     depends_on:
       - postgresdb
     ports:
-      - "8080:8080"
+      - "3000:3000"
     restart: always
     volumes:
       - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro

@@ -12,6 +12,8 @@ import (
 	db "wish-bot/internal/db/sqlc"
 	"wish-bot/internal/service"
 
+	_ "github.com/lib/pq"
+
 	"github.com/pressly/goose/v3"
 )
 
@@ -24,7 +26,9 @@ func main() {
 	config.LoadConfigs("./config/config.yaml")
 	cfg := config.GetConfigs()
 
-	runDBMigrate(&cfg.Postgres)
+	if cfg.Migrations.Migrate {
+		runDBMigrate(&cfg.Postgres)
+	}
 
 	db := db.InitDB(ctx, cfg.Postgres)
 

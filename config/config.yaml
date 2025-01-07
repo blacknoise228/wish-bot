@@ -1,5 +1,7 @@
 app:
   environment: dev
+migrations:
+  migrate: false
 postgres:
   host: postgresdb:5432
   database: wishbot

@@ -1,10 +1,11 @@
 package config
 
 type Config struct {
-	App      App      `yaml:"app"`
-	Postgres Postgres `yaml:"postgres"`
-	API      API      `yaml:"api"`
-	Telegram Telegram `yaml:"token"`
+	App        App        `yaml:"app"`
+	Postgres   Postgres   `yaml:"postgres"`
+	API        API        `yaml:"api"`
+	Telegram   Telegram   `yaml:"token"`
+	Migrations Migrations `yaml:"migrations"`
 }
 
 type App struct {
@@ -26,4 +27,8 @@ type API struct {
 type Telegram struct {
 	Token  string `yaml:"token"`
 	Admins []int  `yaml:"admins"`
+}
+
+type Migrations struct {
+	Migrate bool `yaml:"migrate"`
 }
