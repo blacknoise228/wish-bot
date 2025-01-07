@@ -23,6 +23,8 @@ func (t *Telegram) handleMessage(ctx context.Context, message *tgbotapi.Message)
 	case "/start":
 		t.startMessageHandler(message)
 		t.sendMenuButton(chatID)
+	case "Меню":
+		t.sendInlineMenu(chatID)
 	}
 	switch states {
 	case state.CreateUserWaiting:
