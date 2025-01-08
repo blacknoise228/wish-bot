@@ -81,6 +81,7 @@ func (t *Telegram) handleCallback(query *tgbotapi.CallbackQuery) {
 		t.sendMessage(chatID, "Ваши желания: ")
 		t.getMyWishes(chatID)
 	case "friends":
+		go t.deleteLastMessage(chatID)
 		t.friendsButton(chatID)
 	case "add_friend":
 		go t.deleteLastMessage(chatID)

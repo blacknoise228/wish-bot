@@ -12,7 +12,8 @@ services:
     restart: always
 
   wishbot:
-    image: ghcr.io/blacknoise228/wish-bot:latest
+    build:
+      context: .
     environment:
       - TZ=Asia/Almaty
       - WISHBOT_TELEGRAM_TOKEN=${WISHBOT_TELEGRAM_TOKEN}

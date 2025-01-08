@@ -1,12 +1,12 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE "users" (
+CREATE TABLE IF NOT EXISTS "users" (
   "username" varchar UNIQUE NOT NULL,
   "chat_id" bigint NOT NULL PRIMARY KEY,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE "dim_wish_status" (
+CREATE TABLE IF NOT EXISTS "dim_wish_status" (
     id integer NOT NULL PRIMARY KEY,
     status_name varchar NOT NULL
 );
@@ -15,7 +15,7 @@ INSERT INTO "dim_wish_status" (id, status_name) VALUES (1, 'public');
 
 INSERT INTO "dim_wish_status" (id, status_name) VALUES (2, 'only friends');
 
-CREATE TABLE "wish" (
+CREATE TABLE IF NOT EXISTS "wish" (
     id serial NOT NULL PRIMARY KEY,
     chat_id bigint NOT NULL,
     created_at timestamptz NOT NULL DEFAULT (now()),
@@ -24,7 +24,7 @@ CREATE TABLE "wish" (
     status integer NOT NULL
 );
 
-CREATE TABLE "dim_friend_status" (
+CREATE TABLE IF NOT EXISTS "dim_friend_status" (
     id integer NOT NULL PRIMARY KEY,
     status_name varchar NOT NULL
 );
@@ -35,7 +35,7 @@ INSERT INTO "dim_friend_status" (id, status_name) VALUES (2, 'pending');
 
 INSERT INTO "dim_friend_status" (id, status_name) VALUES (3, 'declined');
 
-CREATE TABLE "friends" (
+CREATE TABLE IF NOT EXISTS "friends" (
     chat_id bigint NOT NULL,
     friend_id bigint NOT NULL,
     status integer NOT NULL DEFAULT 2,
@@ -43,13 +43,13 @@ CREATE TABLE "friends" (
     PRIMARY KEY (chat_id, friend_id)
 );
 
-ALTER TABLE "wish" ADD FOREIGN KEY ("chat_id") REFERENCES "users" ("chat_id");
+ALTER TABLE IF EXISTS "wish" ADD FOREIGN KEY ("chat_id") REFERENCES "users" ("chat_id");
 
-ALTER TABLE "wish" ADD FOREIGN KEY ("status") REFERENCES "dim_wish_status" ("id");
+ALTER TABLE IF EXISTS "wish" ADD FOREIGN KEY ("status") REFERENCES "dim_wish_status" ("id");
 
-ALTER TABLE "friends" ADD FOREIGN KEY ("chat_id") REFERENCES "users" ("chat_id");
+ALTER TABLE IF EXISTS "friends" ADD FOREIGN KEY ("chat_id") REFERENCES "users" ("chat_id");
 
-ALTER TABLE "friends" ADD FOREIGN KEY ("friend_id") REFERENCES "users" ("chat_id");
+ALTER TABLE IF EXISTS "friends" ADD FOREIGN KEY ("friend_id") REFERENCES "users" ("chat_id");
 
 -- +goose StatementEnd
 
