@@ -2,9 +2,12 @@ package telegram
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	db "wish-bot/internal/db/sqlc"
+
+	"github.com/jackc/pgx/v5"
 )
 
 func (t *Telegram) createWish(chatID int64, wishMap map[string]string) {
@@ -55,4 +58,22 @@ func (t *Telegram) getUserWishes(chatID int64, friendUsername string) {
 			wish.Username, wish.Description, wish.Link, wish.CreatedAt, wish.StatusName)
 		t.sendMessage(chatID, msg)
 	}
+}
+
+func (t *Telegram) deleteWish(chatID int64, wishID string) {
+	wish, err := strconv.Atoi(wishID)
+	if err != nil {
+		t.sendMessage(chatID, "Некорректное значение ID")
+		return
+	}
+	err = t.services.Wish.DeleteWish(context.Background(), chatID, wish)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			t.sendMessage(chatID, "Такого желания не существует!")
+			return
+		}
+		t.sendMessage(chatID, "Ошибка при удалении желания!")
+		return
+	}
+	t.sendMessage(chatID, "Желание удалено!")
 }

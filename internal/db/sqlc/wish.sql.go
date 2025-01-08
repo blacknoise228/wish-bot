@@ -62,6 +62,30 @@ func (q *Queries) DeleteWish(ctx context.Context, arg DeleteWishParams) error {
 	return err
 }
 
+const getWish = `-- name: GetWish :one
+SELECT id, chat_id, created_at, description, link, status FROM wish
+WHERE chat_id = $1 AND id = $2
+`
+
+type GetWishParams struct {
+	ChatID int64 `json:"chat_id"`
+	ID     int32 `json:"id"`
+}
+
+func (q *Queries) GetWish(ctx context.Context, arg GetWishParams) (Wish, error) {
+	row := q.db.QueryRow(ctx, getWish, arg.ChatID, arg.ID)
+	var i Wish
+	err := row.Scan(
+		&i.ID,
+		&i.ChatID,
+		&i.CreatedAt,
+		&i.Description,
+		&i.Link,
+		&i.Status,
+	)
+	return i, err
+}
+
 const getWishesForUser = `-- name: GetWishesForUser :many
 SELECT 
     w.description, 

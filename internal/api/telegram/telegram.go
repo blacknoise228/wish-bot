@@ -61,5 +61,18 @@ func (t *Telegram) sendMessage(chatID int64, text string) error {
 		log.Println("Ошибка при отправке сообщения:", err)
 		return err
 	}
+
 	return nil
+}
+
+func (t *Telegram) deleteLastMessage(chatID int64) {
+	msg := tgbotapi.DeleteMessageConfig{
+		ChatID:    chatID,
+		MessageID: lastMessageID[chatID],
+	}
+
+	if _, err := t.Bot.Request(msg); err != nil {
+		log.Printf("Ошибка удаления сообщения: %v\n", err)
+	}
+	delete(lastMessageID, chatID)
 }

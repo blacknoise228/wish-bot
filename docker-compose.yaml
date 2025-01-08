@@ -15,8 +15,9 @@ services:
     image: ghcr.io/blacknoise228/wish-bot:latest
     environment:
       - TZ=Asia/Almaty
-      - WISHBOT_TELEGRAM_TOKEN=7198871252:AAGvf9Hk8XHa43wLeXu8dtX1CxbqG6stz8o
+      - WISHBOT_TELEGRAM_TOKEN=${WISHBOT_TELEGRAM_TOKEN}
       - WISHBOT_POSTGRES_HOST=postgresdb:5432
+      - WISHBOT_APP_ENVIRONMENT=stage
     depends_on:
       - postgresdb
     ports:

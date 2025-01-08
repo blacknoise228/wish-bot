@@ -38,3 +38,17 @@ func (w *Wish) GetUserWishes(ctx context.Context, chatID int64, friendID int64) 
 	}
 	return wishes
 }
+
+func (w *Wish) DeleteWish(ctx context.Context, chatID int64, wishID int) error {
+	_, err := w.db.GetWish(ctx, db.GetWishParams{
+		ChatID: chatID,
+		ID:     int32(wishID),
+	})
+	if err != nil {
+		return err
+	}
+	return w.db.DeleteWish(ctx, db.DeleteWishParams{
+		ID:     int32(wishID),
+		ChatID: chatID,
+	})
+}

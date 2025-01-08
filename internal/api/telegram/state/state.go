@@ -8,6 +8,7 @@ const (
 	AddWishLink       = "add_wish_link"
 	AddWishStat       = "add_wish_stat"
 	GetUserWish       = "get_user_wish"
+	DeleteWish        = "delete_wish"
 	AddFriendWait     = "add_friend_wait"
 	RemoveFriendWait  = "remove_friend_wait"
 )
