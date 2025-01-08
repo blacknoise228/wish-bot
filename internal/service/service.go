@@ -44,6 +44,9 @@ type Wisher interface {
 		chatID int64,
 		friendID int64,
 	) []db.GetWishesPublicRow
+	DeleteWish(ctx context.Context,
+		chatID int64,
+		wishID int) error
 }
 
 type Friender interface {

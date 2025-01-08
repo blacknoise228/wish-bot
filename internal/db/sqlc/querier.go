@@ -20,6 +20,7 @@ type Querier interface {
 	GetPendingFriendships(ctx context.Context, chatID int64) ([]GetPendingFriendshipsRow, error)
 	GetUser(ctx context.Context, chatID int64) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
+	GetWish(ctx context.Context, arg GetWishParams) (Wish, error)
 	GetWishesForUser(ctx context.Context, chatID int64) ([]GetWishesForUserRow, error)
 	GetWishesPublic(ctx context.Context, arg GetWishesPublicParams) ([]GetWishesPublicRow, error)
 	UpdateFriendshipStatus(ctx context.Context, arg UpdateFriendshipStatusParams) (Friend, error)

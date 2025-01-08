@@ -11,6 +11,8 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+var lastMessageID = make(map[int64]int)
+
 func (t *Telegram) handleCallback(query *tgbotapi.CallbackQuery) {
 
 	chatID := query.Message.Chat.ID
@@ -48,17 +50,20 @@ func (t *Telegram) handleCallback(query *tgbotapi.CallbackQuery) {
 
 	switch query.Data {
 	case "menu":
-		t.sendInlineMenu(chatID)
+		go t.sendInlineMenu(chatID)
 	case "register":
+		go t.deleteLastMessage(chatID)
 		state.SetUserState(chatID, state.CreateUserWaiting)
 		t.sendMessage(chatID, createNicknameMessage)
 	case "edit_nickname":
+		go t.deleteLastMessage(chatID)
 		state.SetUserState(chatID, state.UpdateUserWaiting)
 		t.sendMessage(chatID, updateUserMessage)
 	case "delete_user":
 		t.sendMessage(chatID, deleteUserMessage)
 		t.deleteButton(chatID)
 	case "yes_delete":
+		go t.deleteLastMessage(chatID)
 		if err := t.deleteUserHandler(query); err != nil {
 			log.Println("Deleting user error: ", err)
 			t.sendMessage(chatID, "Ошибка. Попробуйте позже.")
@@ -67,27 +72,39 @@ func (t *Telegram) handleCallback(query *tgbotapi.CallbackQuery) {
 		t.sendMessage(chatID, "Пользователь успешно удален.")
 
 	case "add_wish":
+		go t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, AddWishMessage)
 		t.sendMessage(chatID, "Введите описание желания")
 		state.SetUserState(chatID, state.AddWishDesc)
 	case "my_wishes":
+		go t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, "Ваши желания: ")
 		t.getMyWishes(chatID)
 	case "friends":
+		go t.deleteLastMessage(chatID)
 		t.friendsButton(chatID)
 	case "add_friend":
+		go t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, "Введите имя пользователя:")
 		state.SetUserState(chatID, state.AddFriendWait)
 	case "user_wishes":
+		go t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, "Введите имя пользователя:")
 		state.SetUserState(chatID, state.GetUserWish)
+	case "delete_wish":
+		go t.deleteLastMessage(chatID)
+		t.sendMessage(chatID, "Введите ID желания:")
+		state.SetUserState(chatID, state.DeleteWish)
 	case "delete_friend":
+		go t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, "Введите имя пользователя:")
 		state.SetUserState(chatID, state.RemoveFriendWait)
 	case "my_friends":
+		go t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, "Ваши друзья:")
 		t.getUserFriends(context.Background(), chatID)
 	case "pending_friends":
+		t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, "Ваши запросы в друзья:")
 		t.getPendingFriends(context.Background(), chatID)
 	}
@@ -107,9 +124,12 @@ func (t *Telegram) deleteButton(chatID int64) {
 	msg := tgbotapi.NewMessage(chatID, "Вы уверены???")
 	msg.ReplyMarkup = buttons
 
-	if _, err := t.Bot.Send(msg); err != nil {
+	m, err := t.Bot.Send(msg)
+	if err != nil {
 		log.Println("Ошибка при отправке встроенного меню:", err)
 	}
+	delete(lastMessageID, chatID)
+	lastMessageID[chatID] = m.MessageID
 }
 
 func (t *Telegram) friendsButton(chatID int64) {
@@ -129,9 +149,13 @@ func (t *Telegram) friendsButton(chatID int64) {
 	msg := tgbotapi.NewMessage(chatID, "Выберите действие: ")
 	msg.ReplyMarkup = buttons
 
-	if _, err := t.Bot.Send(msg); err != nil {
+	m, err := t.Bot.Send(msg)
+	if err != nil {
 		log.Println("Ошибка при отправке встроенного меню:", err)
 	}
+	delete(lastMessageID, chatID)
+	lastMessageID[chatID] = m.MessageID
+
 }
 
 func (t *Telegram) sendInlineMenu(chatID int64) {
@@ -149,13 +173,19 @@ func (t *Telegram) sendInlineMenu(chatID int64) {
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("Добавить желания", "add_wish"),
 			tgbotapi.NewInlineKeyboardButtonData("Мои желания", "my_wishes"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("Редактировать желание", "edit_wish"),
+			tgbotapi.NewInlineKeyboardButtonData("Удалить желание", "delete_wish"),
 		),
 	)
 	msg := tgbotapi.NewMessage(chatID, "Выберите действие: ")
 	msg.ReplyMarkup = buttons
 
-	if _, err := t.Bot.Send(msg); err != nil {
+	m, err := t.Bot.Send(msg)
+	if err != nil {
 		log.Println("Ошибка при отправке встроенного меню:", err)
 	}
+	delete(lastMessageID, chatID)
+	lastMessageID[chatID] = m.MessageID
 }

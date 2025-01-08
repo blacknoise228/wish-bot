@@ -63,3 +63,7 @@ link = $2,
 status = $3
 WHERE chat_id = $4 AND id = $5
 RETURNING *;
+
+-- name: GetWish :one
+SELECT * FROM wish
+WHERE chat_id = $1 AND id = $2;

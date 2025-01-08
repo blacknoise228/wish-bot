@@ -59,6 +59,11 @@ func (t *Telegram) handleMessage(ctx context.Context, message *tgbotapi.Message)
 	case state.GetUserWish:
 		t.getUserWishes(chatID, message.Text)
 		state.ClearUserState(chatID)
+	case state.DeleteWish:
+		t.deleteWish(chatID, message.Text)
+		state.ClearUserState(chatID)
+		t.sendInlineMenu(chatID)
+
 	case state.AddFriendWait:
 		t.createFriendship(ctx, chatID, message.Text)
 		state.ClearUserState(chatID)
