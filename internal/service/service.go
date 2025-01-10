@@ -47,6 +47,11 @@ type Wisher interface {
 	DeleteWish(ctx context.Context,
 		chatID int64,
 		wishID int) error
+	UpdateWish(ctx context.Context,
+		req db.UpdateWishParams) (db.Wish, error)
+	GetWish(ctx context.Context,
+		chatID int64,
+		wishID int) (db.Wish, error)
 }
 
 type Friender interface {

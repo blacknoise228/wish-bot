@@ -52,3 +52,14 @@ func (w *Wish) DeleteWish(ctx context.Context, chatID int64, wishID int) error {
 		ChatID: chatID,
 	})
 }
+
+func (w *Wish) UpdateWish(ctx context.Context, req db.UpdateWishParams) (db.Wish, error) {
+	return w.db.UpdateWish(ctx, req)
+}
+
+func (w *Wish) GetWish(ctx context.Context, chatID int64, wishID int) (db.Wish, error) {
+	return w.db.GetWish(ctx, db.GetWishParams{
+		ChatID: chatID,
+		ID:     int32(wishID),
+	})
+}

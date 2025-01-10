@@ -1,4 +1,4 @@
-package telegram
+package tgservice
 
 import (
 	"context"
@@ -12,8 +12,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (t *Telegram) startMessageHandler(message *tgbotapi.Message) {
-	t.sendMessage(message.Chat.ID, startMessage)
+func (t *TGService) StartMessageHandler(message *tgbotapi.Message) {
+	t.sendMessage(message.Chat.ID, StartMessage)
 	buttonMessage := "Добро пожаловать в Wish Bot!"
 	button := tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
@@ -28,8 +28,8 @@ func (t *Telegram) startMessageHandler(message *tgbotapi.Message) {
 		log.Println("Ошибка при отправке сообщения:", err)
 	}
 }
-func (t *Telegram) createUserHandler(ctx context.Context, message *tgbotapi.Message) error {
-	_, err := t.services.User.GetUser(ctx, message.Chat.ID)
+func (t *TGService) CreateUserHandler(ctx context.Context, message *tgbotapi.Message) error {
+	_, err := t.Services.User.GetUser(ctx, message.Chat.ID)
 	if err == nil {
 		if sendErr := t.sendMessage(message.Chat.ID, "Вы уже зарегистрированы!"); sendErr != nil {
 			return sendErr
@@ -37,7 +37,7 @@ func (t *Telegram) createUserHandler(ctx context.Context, message *tgbotapi.Mess
 		return nil
 	}
 
-	_, err = t.services.User.GetUserByUsername(ctx, message.Text)
+	_, err = t.Services.User.GetUserByUsername(ctx, message.Text)
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
 			return errornator.CustomError(err.Error())
@@ -48,7 +48,7 @@ func (t *Telegram) createUserHandler(ctx context.Context, message *tgbotapi.Mess
 		}
 		return nil
 	}
-	_, err = t.services.User.CreateUser(ctx, db.CreateUserParams{
+	_, err = t.Services.User.CreateUser(ctx, db.CreateUserParams{
 		ChatID:   message.Chat.ID,
 		Username: message.Text,
 	})
@@ -61,17 +61,9 @@ func (t *Telegram) createUserHandler(ctx context.Context, message *tgbotapi.Mess
 	return nil
 }
 
-func (t *Telegram) getUserHandler(ctx context.Context, message *tgbotapi.Message) (*db.User, error) {
-	user, err := t.services.User.GetUser(ctx, message.Chat.ID)
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
-}
+func (t *TGService) UpdateUserHandler(ctx context.Context, message *tgbotapi.Message) error {
 
-func (t *Telegram) updateUserHandler(ctx context.Context, message *tgbotapi.Message) error {
-
-	usr, err := t.services.User.UpdateUser(ctx, db.UpdateUserParams{
+	usr, err := t.Services.User.UpdateUser(ctx, db.UpdateUserParams{
 		ChatID:   message.Chat.ID,
 		Username: message.Text,
 	})
@@ -84,18 +76,15 @@ func (t *Telegram) updateUserHandler(ctx context.Context, message *tgbotapi.Mess
 	return nil
 }
 
-func (t *Telegram) deleteUserHandler(query *tgbotapi.CallbackQuery) error {
-	friends, err := t.services.Friend.GetPendingFriendships(context.Background(), query.Message.Chat.ID)
+func (t *TGService) DeleteUserHandler(query *tgbotapi.CallbackQuery) error {
+	friends, err := t.Services.Friend.GetPendingFriendships(context.Background(), query.Message.Chat.ID)
 	if err != nil {
 		return err
 	}
 	if len(friends) != 0 {
 		for _, friend := range friends {
-			if friend.ChatID != query.Message.Chat.ID {
-				t.services.Friend.DeleteFriendship(context.Background(), friend.ChatID, query.Message.Chat.ID)
-			}
-			t.services.Friend.DeleteFriendship(context.Background(), query.Message.Chat.ID, friend.FriendID)
+			t.Services.Friend.DeleteFriendship(context.Background(), query.Message.Chat.ID, friend.FriendID)
 		}
 	}
-	return t.services.User.DeleteUser(context.Background(), query.Message.Chat.ID)
+	return t.Services.User.DeleteUser(context.Background(), query.Message.Chat.ID)
 }

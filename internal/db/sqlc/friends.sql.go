@@ -51,11 +51,27 @@ func (q *Queries) DeleteFriendship(ctx context.Context, arg DeleteFriendshipPara
 }
 
 const getAprovedFriendships = `-- name: GetAprovedFriendships :many
-SELECT u.username, f.friend_id
+SELECT 
+    u_friend.username AS username,
+    u_friend.chat_id AS friend_id
 FROM friends f
-JOIN users u ON u.chat_id = f.friend_id
+JOIN users u_friend ON u_friend.chat_id = f.friend_id
 JOIN dim_friend_status d ON d.id = f.status
-WHERE f.chat_id = $1 AND f.status = 1
+WHERE 
+    f.chat_id = $1
+    AND f.status = 1
+
+UNION
+
+SELECT 
+    u_chat.username AS username,
+    u_chat.chat_id AS friend_id
+FROM friends f
+JOIN users u_chat ON u_chat.chat_id = f.chat_id
+JOIN dim_friend_status d ON d.id = f.status
+WHERE 
+    f.friend_id = $1
+    AND f.status = 1
 `
 
 type GetAprovedFriendshipsRow struct {
@@ -106,18 +122,35 @@ func (q *Queries) GetFriendship(ctx context.Context, arg GetFriendshipParams) (F
 }
 
 const getPendingFriendships = `-- name: GetPendingFriendships :many
-SELECT u.username, f.friend_id, d.status_name, f.chat_id
+SELECT 
+    u_friend.username AS username,
+    u_friend.chat_id AS friend_id,
+    d.status_name
 FROM friends f
-JOIN users u ON u.chat_id = f.friend_id
+JOIN users u_friend ON u_friend.chat_id = f.friend_id
 JOIN dim_friend_status d ON d.id = f.status
-WHERE f.chat_id = $1 OR f.friend_id = $1 AND f.status != 1
+WHERE 
+    f.chat_id = $1
+    AND f.status != 1
+
+UNION
+
+SELECT 
+    u_chat.username AS username,
+    u_chat.chat_id AS friend_id,
+    d.status_name
+FROM friends f
+JOIN users u_chat ON u_chat.chat_id = f.chat_id
+JOIN dim_friend_status d ON d.id = f.status
+WHERE 
+    f.friend_id = $1
+    AND f.status != 1
 `
 
 type GetPendingFriendshipsRow struct {
 	Username   string `json:"username"`
 	FriendID   int64  `json:"friend_id"`
 	StatusName string `json:"status_name"`
-	ChatID     int64  `json:"chat_id"`
 }
 
 func (q *Queries) GetPendingFriendships(ctx context.Context, chatID int64) ([]GetPendingFriendshipsRow, error) {
@@ -129,12 +162,7 @@ func (q *Queries) GetPendingFriendships(ctx context.Context, chatID int64) ([]Ge
 	items := []GetPendingFriendshipsRow{}
 	for rows.Next() {
 		var i GetPendingFriendshipsRow
-		if err := rows.Scan(
-			&i.Username,
-			&i.FriendID,
-			&i.StatusName,
-			&i.ChatID,
-		); err != nil {
+		if err := rows.Scan(&i.Username, &i.FriendID, &i.StatusName); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

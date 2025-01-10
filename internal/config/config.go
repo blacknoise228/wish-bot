@@ -37,7 +37,7 @@ func LoadConfigs(configPath string) {
 	_ = yaml.NewEncoder(buf).Encode(configs)
 	if configs.App.Environment == "dev" {
 		configs.Postgres.Host = "localhost:5432"
-		configs.Migrations.Migrate = true
+		configs.Migrations.Migrate = false
 		fmt.Println("Effective configuration:")
 		fmt.Println(buf.String())
 	}

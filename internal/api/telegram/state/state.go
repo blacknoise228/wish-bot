@@ -11,6 +11,9 @@ const (
 	DeleteWish        = "delete_wish"
 	AddFriendWait     = "add_friend_wait"
 	RemoveFriendWait  = "remove_friend_wait"
+	UpdateWishDesc    = "update_wish_desc"
+	UpdateWishLink    = "update_wish_link"
+	UpdateWishStat    = "update_wish_stat"
 )
 
 var UserStates = make(map[int64]string)

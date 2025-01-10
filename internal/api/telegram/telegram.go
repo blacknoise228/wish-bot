@@ -6,23 +6,28 @@ import (
 	"sync"
 	"wish-bot/internal/config"
 	"wish-bot/internal/service"
+	tgservice "wish-bot/internal/tg-service"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type Telegram struct {
-	Bot      *tgbotapi.BotAPI
-	services *service.Services
+	Bot       *tgbotapi.BotAPI
+	tgService *tgservice.TGService
 }
 
 func NewTelegram(cfg *config.Config, services *service.Services) *Telegram {
+
 	bot, err := tgbotapi.NewBotAPI(cfg.Telegram.Token)
 	if err != nil {
 		log.Panic(err)
 	}
+
+	tgservice := tgservice.NewTGService(bot, services)
+
 	return &Telegram{
-		Bot:      bot,
-		services: services,
+		Bot:       bot,
+		tgService: tgservice,
 	}
 }
 
@@ -47,6 +52,7 @@ func (t *Telegram) StartBot(ctx context.Context) {
 }
 
 func (t *Telegram) handleUpdate(ctx context.Context, update tgbotapi.Update) {
+
 	if update.CallbackQuery != nil {
 		t.handleCallback(update.CallbackQuery)
 	}
