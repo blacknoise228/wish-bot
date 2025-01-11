@@ -53,7 +53,7 @@ func (t *Telegram) sendSkipButton(chatID int64) {
 	buttons := tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton("Пропустить"),
 	)
-	msg := tgbotapi.NewMessage(chatID, "")
+	msg := tgbotapi.NewMessage(chatID, "...")
 	msg.ReplyMarkup = tgbotapi.NewReplyKeyboard(buttons)
 
 	if _, err := t.Bot.Send(msg); err != nil {

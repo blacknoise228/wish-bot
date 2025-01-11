@@ -76,10 +76,10 @@ func (t *Telegram) messageWishHandler(states string, message *tgbotapi.Message) 
 	case state.AddWishStat:
 		wishMap["status"] = message.Text
 		t.tgService.CreateWish(chatID, wishMap)
-		state.ClearUserState(chatID)
 		t.sendInlineMenu(chatID)
 		t.sendMenuButton(chatID)
 		clearWishMap(wishMap)
+		state.ClearUserState(chatID)
 
 	case state.UpdateWishDesc:
 		t.sendSkipButton(chatID)
