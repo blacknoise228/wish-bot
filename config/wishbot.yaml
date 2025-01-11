@@ -1,0 +1,16 @@
+app:
+  environment: stage
+migrations:
+  migrate: true
+postgres:
+  host: postgresdb:5432
+  database: wishbot
+  userName: root
+  password: password
+  sslMode: disable
+api:
+  port: "8080"
+telegram:
+  token: 111111111111111111111111111111111111111
+  admin: wkcb0J2r5YjfxfXa15aDoxWjUfvd5LjPp7
+  

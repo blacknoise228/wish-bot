@@ -5,8 +5,8 @@ package cmd
 
 import (
 	"fmt"
-	"wish-bot/internal/config"
-	"wish-bot/internal/db/migration"
+	"wish-bot/core/wishbot/config"
+	"wish-bot/migration"
 
 	"github.com/spf13/cobra"
 )

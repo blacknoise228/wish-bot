@@ -5,12 +5,15 @@ package main
 
 import (
 	"wish-bot/cmd"
-	"wish-bot/internal/config"
+	shopcfg "wish-bot/core/shop/config"
+	wishcfg "wish-bot/core/wishbot/config"
 )
 
 func main() {
 
-	config.LoadConfigs("./config/config.yaml")
+	wishcfg.LoadConfigs("./config/wishbot.yaml")
+
+	shopcfg.LoadConfigs("./config/shop.yaml")
 
 	cmd.Execute()
 
