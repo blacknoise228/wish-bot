@@ -11,7 +11,7 @@ func (t *Telegram) sendMenuButton(chatID int64) {
 	buttons := tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton("Меню"),
 	)
-	msg := tgbotapi.NewMessage(chatID, "Выберите действие: ")
+	msg := tgbotapi.NewMessage(chatID, "Меню")
 	msg.ReplyMarkup = tgbotapi.NewReplyKeyboard(buttons)
 
 	if _, err := t.Bot.Send(msg); err != nil {
