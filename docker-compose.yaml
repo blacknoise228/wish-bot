@@ -26,6 +26,18 @@ services:
     restart: always
     volumes:
       - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro
+    command: bot
+
+  migration:
+    build:
+      context: .
+    environment:
+      - WISHBOT_POSTGRES_HOST=postgresdb:5432
+      - WISHBOT_APP_ENVIRONMENT=stage
+    depends_on:
+      - postgresdb
+    command: migrate
+
 
 volumes:
   db_data:    
