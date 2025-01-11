@@ -27,6 +27,7 @@ func (t *Telegram) callbackWishHandler(query *tgbotapi.CallbackQuery) {
 		go t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, tgservice.AddWishMessage)
 		t.sendMessage(chatID, "Введите описание желания")
+		t.sendSkipButton(chatID)
 		state.SetUserState(chatID, state.AddWishDesc)
 	case "my_wishes":
 		go t.deleteLastMessage(chatID)
@@ -42,7 +43,7 @@ func (t *Telegram) callbackWishHandler(query *tgbotapi.CallbackQuery) {
 		wishMap["wish_id"] = id
 
 		t.sendMessage(chatID, "Введите описание желания")
-
+		t.sendSkipButton(chatID)
 		state.SetUserState(chatID, state.UpdateWishDesc)
 	}
 	if strings.HasPrefix(query.Data, "remove_wish:") {
@@ -60,7 +61,6 @@ func (t *Telegram) messageWishHandler(states string, message *tgbotapi.Message) 
 	switch states {
 
 	case state.AddWishDesc:
-		t.sendSkipButton(chatID)
 		if message.Text != "Пропустить" {
 			wishMap["desc"] = message.Text
 		}
@@ -82,7 +82,6 @@ func (t *Telegram) messageWishHandler(states string, message *tgbotapi.Message) 
 		state.ClearUserState(chatID)
 
 	case state.UpdateWishDesc:
-		t.sendSkipButton(chatID)
 		if message.Text != "Пропустить" {
 			wishMap["desc"] = message.Text
 		}
