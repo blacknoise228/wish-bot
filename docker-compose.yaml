@@ -39,7 +39,7 @@ services:
     depends_on:
       - postgresdb
     ports:
-      - "3000:3000"
+      - "3001:3001"
     restart: always
     volumes:
       - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro

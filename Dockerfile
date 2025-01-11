@@ -17,6 +17,8 @@ RUN  apk --update add \
 
 COPY --from=builder /app/wish-bot /app/wish-bot
 
-COPY --from=builder /app/config/config.yaml /app/config/config.yaml
+COPY --from=builder /app/config/shop.yaml /app/config/shop.yaml
+
+COPY --from=builder /app/config/wishbot.yaml /app/config/wishbot.yaml
 
 ENTRYPOINT ["/app/wish-bot"]
