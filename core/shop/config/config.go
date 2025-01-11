@@ -14,7 +14,7 @@ var configs = Config{}
 
 func LoadConfigs(configPath string) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	viper.SetEnvPrefix("WISHBOT")
+	viper.SetEnvPrefix("SHOP")
 	viper.AutomaticEnv()
 
 	if configPath != "" {

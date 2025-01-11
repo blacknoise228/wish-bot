@@ -26,7 +26,24 @@ services:
     restart: always
     volumes:
       - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro
-    command: bot
+    command: wishbot
+
+  shop:
+    build:
+      context: .
+    environment:
+      - TZ=Asia/Almaty
+      - SHOP_TELEGRAM_TOKEN=${SHOP_TELEGRAM_TOKEN}
+      - SHOP_POSTGRES_HOST=postgresdb:5432
+      - SHOP_APP_ENVIRONMENT=stage
+    depends_on:
+      - postgresdb
+    ports:
+      - "3000:3000"
+    restart: always
+    volumes:
+      - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro
+    command: shop
 
   migration:
     build:
