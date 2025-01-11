@@ -9,6 +9,9 @@ import (
 )
 
 func main() {
-	cmd.Execute()
+
 	config.LoadConfigs("./config/config.yaml")
+
+	cmd.Execute()
+
 }

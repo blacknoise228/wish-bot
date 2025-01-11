@@ -14,9 +14,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// wishbotCmd represents the wishbot command
-var wishbotCmd = &cobra.Command{
-	Use:   "wishbot",
+// botCmd represents the wishbot command
+var botCmd = &cobra.Command{
+	Use:   "bot",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -43,5 +43,5 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(wishbotCmd)
+	rootCmd.AddCommand(botCmd)
 }
