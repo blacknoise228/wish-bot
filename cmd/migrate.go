@@ -27,8 +27,11 @@ to quickly create a Cobra application.`,
 		cfg := config.GetConfigs()
 
 		if cfg.Migrations.Migrate {
+			fmt.Println("Migration: start")
 			migration.RunDBMigrate(&cfg.Postgres)
 		}
+
+		fmt.Println("Done")
 	},
 }
 

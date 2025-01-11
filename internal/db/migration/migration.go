@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"wish-bot/internal/config"
 
+	_ "github.com/lib/pq"
+
 	"github.com/pressly/goose/v3"
 )
 
@@ -30,8 +32,10 @@ func RunDBMigrate(dbConfig *config.Postgres) {
 	if err := goose.SetDialect("postgres"); err != nil {
 		log.Fatal("Migration: failed set dialect: ", err)
 	}
-	err = goose.Up(conn, "internal/db/migration")
+	err = goose.Up(conn, ".")
 	if err != nil {
 		log.Fatal("Migration: failed: ", err)
 	}
+
+	log.Println("Migration: success")
 }
