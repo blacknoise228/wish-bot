@@ -64,12 +64,12 @@ type Product struct {
 	ID          uuid.UUID        `json:"id"`
 	Name        string           `json:"name"`
 	Price       float64          `json:"price"`
-	Description pgtype.Text      `json:"description"`
+	Description string           `json:"description"`
 	Image       string           `json:"image"`
 	CategoryID  int32            `json:"category_id"`
 	Status      int32            `json:"status"`
 	ShopID      uuid.UUID        `json:"shop_id"`
-	AdminID     pgtype.Int8      `json:"admin_id"`
+	AdminID     int64            `json:"admin_id"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }

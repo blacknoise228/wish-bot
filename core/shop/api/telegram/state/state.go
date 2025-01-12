@@ -1,19 +1,21 @@
 package state
 
 const (
-	CreateUserWaiting = "create_user_waiting"
-	UpdateUserWaiting = "update_user_waiting"
-	AddWishWait       = "add_wish_wait"
-	AddWishDesc       = "add_wish_desc"
-	AddWishLink       = "add_wish_link"
-	AddWishStat       = "add_wish_stat"
-	GetUserWish       = "get_user_wish"
-	DeleteWish        = "delete_wish"
-	AddFriendWait     = "add_friend_wait"
-	RemoveFriendWait  = "remove_friend_wait"
-	UpdateWishDesc    = "update_wish_desc"
-	UpdateWishLink    = "update_wish_link"
-	UpdateWishStat    = "update_wish_stat"
+	AddAdmin              = "add_admin"
+	CreateProduct         = "create_product"
+	AddProductName        = "add_product_name"
+	AddProductDesc        = "add_product_desc"
+	AddProductPrice       = "add_product_price"
+	AddProductCategory    = "add_product_category"
+	AddProductImage       = "add_product_image"
+	UpdateProduct         = "update_product"
+	UpdateProductName     = "update_product_name"
+	UpdateProductDesc     = "update_product_desc"
+	UpdateProductPrice    = "update_product_price"
+	UpdateProductCategory = "update_product_category"
+	UpdateProductImage    = "update_product_image"
+	UpdateProductStatus   = "update_product_status"
+	SendPaymentLink       = "send_payment_link"
 )
 
 var UserStates = make(map[int64]string)

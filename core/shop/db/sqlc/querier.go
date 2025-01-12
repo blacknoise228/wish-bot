@@ -17,11 +17,15 @@ type Querier interface {
 	CreateShopAdmin(ctx context.Context, arg CreateShopAdminParams) error
 	DeleteProduct(ctx context.Context, arg DeleteProductParams) error
 	DeleteShop(ctx context.Context, arg DeleteShopParams) error
+	DeleteShopAdmin(ctx context.Context, adminID int64) error
 	GetOrder(ctx context.Context, id uuid.UUID) (Order, error)
 	GetOrdersByAdmin(ctx context.Context, adminID int64) ([]Order, error)
 	GetOrdersByShop(ctx context.Context, shopID uuid.UUID) ([]Order, error)
+	GetProductCategoryByName(ctx context.Context, categoryName string) (DimProductCategory, error)
+	GetProductStatusByName(ctx context.Context, statusName string) (DimProductStatus, error)
 	GetProducts(ctx context.Context, shopID uuid.UUID) ([]Product, error)
 	GetRandomAdminByShopID(ctx context.Context, shopID uuid.UUID) (ShopAdmin, error)
+	GetShopAdminsByAdminID(ctx context.Context, adminID int64) (ShopAdmin, error)
 	GetShopAdminsByShopID(ctx context.Context, shopID uuid.UUID) ([]ShopAdmin, error)
 	GetShopByID(ctx context.Context, id uuid.UUID) (Shop, error)
 	GetShopByToken(ctx context.Context, token string) (Shop, error)

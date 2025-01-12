@@ -1,7 +1,6 @@
 package telegram
 
 import (
-	"context"
 	"log"
 	"sync"
 	"wish-bot/core/shop/config"
@@ -31,7 +30,7 @@ func NewTelegram(cfg *config.Config, db *db.Queries) *Telegram {
 	}
 }
 
-func (t *Telegram) StartBot(ctx context.Context) {
+func (t *Telegram) StartBot() {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
@@ -43,7 +42,7 @@ func (t *Telegram) StartBot(ctx context.Context) {
 		wg.Add(1)
 		go func(update tgbotapi.Update) {
 			defer wg.Done()
-			t.handleUpdate(ctx, update)
+			t.handleUpdate(update)
 		}(update)
 	}
 
@@ -51,13 +50,13 @@ func (t *Telegram) StartBot(ctx context.Context) {
 
 }
 
-func (t *Telegram) handleUpdate(ctx context.Context, update tgbotapi.Update) {
+func (t *Telegram) handleUpdate(update tgbotapi.Update) {
 
 	if update.CallbackQuery != nil {
 		t.handleCallback(update.CallbackQuery)
 	}
 	if update.Message != nil {
-		t.handleMessage(ctx, update.Message)
+		t.handleMessage(update.Message)
 	}
 }
 

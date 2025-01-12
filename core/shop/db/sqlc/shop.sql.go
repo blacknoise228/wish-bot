@@ -84,6 +84,16 @@ func (q *Queries) DeleteShop(ctx context.Context, arg DeleteShopParams) error {
 	return err
 }
 
+const deleteShopAdmin = `-- name: DeleteShopAdmin :exec
+DELETE FROM shop_admins
+WHERE admin_id = $1
+`
+
+func (q *Queries) DeleteShopAdmin(ctx context.Context, adminID int64) error {
+	_, err := q.db.Exec(ctx, deleteShopAdmin, adminID)
+	return err
+}
+
 const getRandomAdminByShopID = `-- name: GetRandomAdminByShopID :one
 SELECT admin_id, shop_id FROM shop_admins
 WHERE shop_id = $1
@@ -93,6 +103,19 @@ LIMIT 1
 
 func (q *Queries) GetRandomAdminByShopID(ctx context.Context, shopID uuid.UUID) (ShopAdmin, error) {
 	row := q.db.QueryRow(ctx, getRandomAdminByShopID, shopID)
+	var i ShopAdmin
+	err := row.Scan(&i.AdminID, &i.ShopID)
+	return i, err
+}
+
+const getShopAdminsByAdminID = `-- name: GetShopAdminsByAdminID :one
+SELECT admin_id, shop_id FROM shop_admins
+WHERE admin_id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetShopAdminsByAdminID(ctx context.Context, adminID int64) (ShopAdmin, error) {
+	row := q.db.QueryRow(ctx, getShopAdminsByAdminID, adminID)
 	var i ShopAdmin
 	err := row.Scan(&i.AdminID, &i.ShopID)
 	return i, err

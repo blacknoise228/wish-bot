@@ -1,39 +1,55 @@
 package telegram
 
 import (
-	"context"
 	"log"
 	"wish-bot/core/shop/api/telegram/state"
+	"wish-bot/pkg/errornator"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 var (
 	lastMessageID = make(map[int64]int)
-	userWishData  = make(map[int64]map[string]string)
+	messageData   = make(map[int64]map[string]string)
 )
 
 func (t *Telegram) handleCallback(query *tgbotapi.CallbackQuery) {
 
-	if _, exists := userWishData[query.Message.Chat.ID]; !exists {
-		userWishData[query.Message.Chat.ID] = make(map[string]string)
+	if _, exists := messageData[query.Message.Chat.ID]; !exists {
+		messageData[query.Message.Chat.ID] = make(map[string]string)
 	}
+
+	if _, exists := lastMessageID[query.Message.Chat.ID]; !exists {
+		lastMessageID = make(map[int64]int)
+	}
+
+	t.callbackProductHandler(query)
+	t.callbackShopHandler(query)
 
 	log.Println(query.Message.Chat.ID, query.Data)
 
 	callback := tgbotapi.NewCallback(query.ID, "Ждем...")
 	if _, err := t.Bot.Request(callback); err != nil {
 		log.Println("Ошибка при обработке CallbackQuery:", err)
+		log.Println(errornator.CustomError(err.Error()))
 	}
 }
 
-func (t *Telegram) handleMessage(ctx context.Context, message *tgbotapi.Message) {
+func (t *Telegram) handleMessage(message *tgbotapi.Message) {
 
-	state.GetUserState(message.Chat.ID)
+	userstate := state.GetUserState(message.Chat.ID)
 
-	if _, exists := userWishData[message.Chat.ID]; !exists {
-		userWishData[message.Chat.ID] = make(map[string]string)
+	if _, exists := messageData[message.Chat.ID]; !exists {
+		messageData[message.Chat.ID] = make(map[string]string)
 	}
+
+	if _, exists := lastMessageID[message.Chat.ID]; !exists {
+		lastMessageID = make(map[int64]int)
+	}
+
+	t.createProductHandler(message, userstate)
+	t.updateProductHandler(message, userstate)
+	t.mesageShopHandler(message, userstate)
 
 	switch message.Text {
 	case "/start":

@@ -16,6 +16,6 @@ func ShopBotService() {
 
 	tg := telegram.NewTelegram(&cfg, db.Queries)
 
-	tg.StartBot(ctx)
+	tg.StartBot()
 
 }

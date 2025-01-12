@@ -40,3 +40,11 @@ RETURNING *;
 -- name: GetProducts :many
 SELECT * FROM product
 WHERE shop_id = $1;
+
+-- name: GetProductCategoryByName :one
+SELECT * FROM dim_product_category
+WHERE category_name = $1 LIMIT 1;
+
+-- name: GetProductStatusByName :one
+SELECT * FROM dim_product_status
+WHERE status_name = $1 LIMIT 1;

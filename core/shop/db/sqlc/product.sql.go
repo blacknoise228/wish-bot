@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createProduct = `-- name: CreateProduct :one
@@ -28,14 +27,14 @@ INSERT INTO product (
 `
 
 type CreateProductParams struct {
-	Name        string      `json:"name"`
-	Description pgtype.Text `json:"description"`
-	Price       float64     `json:"price"`
-	Image       string      `json:"image"`
-	CategoryID  int32       `json:"category_id"`
-	Status      int32       `json:"status"`
-	AdminID     pgtype.Int8 `json:"admin_id"`
-	ShopID      uuid.UUID   `json:"shop_id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Price       float64   `json:"price"`
+	Image       string    `json:"image"`
+	CategoryID  int32     `json:"category_id"`
+	Status      int32     `json:"status"`
+	AdminID     int64     `json:"admin_id"`
+	ShopID      uuid.UUID `json:"shop_id"`
 }
 
 func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) {
@@ -79,6 +78,30 @@ type DeleteProductParams struct {
 func (q *Queries) DeleteProduct(ctx context.Context, arg DeleteProductParams) error {
 	_, err := q.db.Exec(ctx, deleteProduct, arg.ID, arg.ShopID)
 	return err
+}
+
+const getProductCategoryByName = `-- name: GetProductCategoryByName :one
+SELECT id, category_code, category_name FROM dim_product_category
+WHERE category_name = $1 LIMIT 1
+`
+
+func (q *Queries) GetProductCategoryByName(ctx context.Context, categoryName string) (DimProductCategory, error) {
+	row := q.db.QueryRow(ctx, getProductCategoryByName, categoryName)
+	var i DimProductCategory
+	err := row.Scan(&i.ID, &i.CategoryCode, &i.CategoryName)
+	return i, err
+}
+
+const getProductStatusByName = `-- name: GetProductStatusByName :one
+SELECT id, status_code, status_name FROM dim_product_status
+WHERE status_name = $1 LIMIT 1
+`
+
+func (q *Queries) GetProductStatusByName(ctx context.Context, statusName string) (DimProductStatus, error) {
+	row := q.db.QueryRow(ctx, getProductStatusByName, statusName)
+	var i DimProductStatus
+	err := row.Scan(&i.ID, &i.StatusCode, &i.StatusName)
+	return i, err
 }
 
 const getProducts = `-- name: GetProducts :many
@@ -134,15 +157,15 @@ RETURNING id, name, price, description, image, category_id, status, shop_id, adm
 `
 
 type UpdateProductParams struct {
-	Name        string      `json:"name"`
-	Price       float64     `json:"price"`
-	Image       string      `json:"image"`
-	Description pgtype.Text `json:"description"`
-	CategoryID  int32       `json:"category_id"`
-	Status      int32       `json:"status"`
-	AdminID     pgtype.Int8 `json:"admin_id"`
-	ID          uuid.UUID   `json:"id"`
-	ShopID      uuid.UUID   `json:"shop_id"`
+	Name        string    `json:"name"`
+	Price       float64   `json:"price"`
+	Image       string    `json:"image"`
+	Description string    `json:"description"`
+	CategoryID  int32     `json:"category_id"`
+	Status      int32     `json:"status"`
+	AdminID     int64     `json:"admin_id"`
+	ID          uuid.UUID `json:"id"`
+	ShopID      uuid.UUID `json:"shop_id"`
 }
 
 func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
