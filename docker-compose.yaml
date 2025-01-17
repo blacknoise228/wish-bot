@@ -12,8 +12,9 @@ services:
     restart: always
 
   wishbot:
-    build:
-      context: .
+    image: ghcr.io/blacknoise228/wish-bot:latest
+    pull_policy: always
+
     environment:
       - TZ=Asia/Almaty
       - WISHBOT_TELEGRAM_TOKEN=${WISHBOT_TELEGRAM_TOKEN}
@@ -26,6 +27,35 @@ services:
     restart: always
     volumes:
       - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro
+    command: wishbot
+
+  shop:
+    image: ghcr.io/blacknoise228/wish-bot:latest
+    pull_policy: always
+    environment:
+      - TZ=Asia/Almaty
+      - SHOP_TELEGRAM_TOKEN=${SHOP_TELEGRAM_TOKEN}
+      - SHOP_POSTGRES_HOST=postgresdb:5432
+      - SHOP_APP_ENVIRONMENT=stage
+    depends_on:
+      - postgresdb
+    ports:
+      - "3001:3001"
+    restart: always
+    volumes:
+      - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro
+    command: shop
+
+  migration:
+    build:
+      context: .
+    environment:
+      - WISHBOT_POSTGRES_HOST=postgresdb:5432
+      - WISHBOT_APP_ENVIRONMENT=stage
+    depends_on:
+      - postgresdb
+    command: migrate
+
 
 volumes:
   db_data:    
