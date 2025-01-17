@@ -7,6 +7,8 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+var lastMessage = make(map[int64]int)
+
 type TGService struct {
 	Bot      *tgbotapi.BotAPI
 	Services *service.Services
@@ -27,4 +29,16 @@ func (t *TGService) sendMessage(chatID int64, text string) error {
 	}
 
 	return nil
+}
+
+func (t *TGService) deleteLastMessage(chatID int64) {
+	msg := tgbotapi.DeleteMessageConfig{
+		ChatID:    chatID,
+		MessageID: lastMessage[chatID],
+	}
+
+	if _, err := t.Bot.Request(msg); err != nil {
+		log.Printf("Ошибка удаления сообщения: %v\n", err)
+	}
+	delete(lastMessage, chatID)
 }

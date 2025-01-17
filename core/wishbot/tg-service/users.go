@@ -56,7 +56,7 @@ func (t *TGService) CreateUserHandler(ctx context.Context, message *tgbotapi.Mes
 	if err != nil {
 		return err
 	}
-	if err := t.sendMessage(message.Chat.ID, "Пользователь успешно зарегистрирован!"); err != nil {
+	if err := t.sendMessage(message.Chat.ID, "Пользователь успешно зарегистрирован! Ваш ник: "+message.Text+"."); err != nil {
 		return err
 	}
 	return nil
@@ -85,6 +85,15 @@ func (t *TGService) DeleteUserHandler(query *tgbotapi.CallbackQuery) error {
 	if len(friends) != 0 {
 		for _, friend := range friends {
 			t.Services.Friend.DeleteFriendship(context.Background(), query.Message.Chat.ID, friend.FriendID)
+		}
+	}
+	wishes, err := t.Services.Wish.GetWishesForUser(context.Background(), query.Message.Chat.ID)
+	if err != nil {
+		return err
+	}
+	if len(wishes) != 0 {
+		for _, wish := range wishes {
+			t.Services.Wish.DeleteWish(context.Background(), wish.ChatID, int(wish.ID))
 		}
 	}
 	return t.Services.User.DeleteUser(context.Background(), query.Message.Chat.ID)

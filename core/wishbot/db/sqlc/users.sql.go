@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -28,6 +30,37 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	var i User
 	err := row.Scan(&i.Username, &i.ChatID, &i.CreatedAt)
 	return i, err
+}
+
+const createUserInfo = `-- name: CreateUserInfo :exec
+INSERT INTO user_info (
+    chat_id,
+    address,
+    phone,
+    name,
+    description
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+`
+
+type CreateUserInfoParams struct {
+	ChatID      int64       `json:"chat_id"`
+	Address     pgtype.Text `json:"address"`
+	Phone       pgtype.Text `json:"phone"`
+	Name        pgtype.Text `json:"name"`
+	Description pgtype.Text `json:"description"`
+}
+
+func (q *Queries) CreateUserInfo(ctx context.Context, arg CreateUserInfoParams) error {
+	_, err := q.db.Exec(ctx, createUserInfo,
+		arg.ChatID,
+		arg.Address,
+		arg.Phone,
+		arg.Name,
+		arg.Description,
+	)
+	return err
 }
 
 const deleteUser = `-- name: DeleteUser :exec

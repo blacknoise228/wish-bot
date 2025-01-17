@@ -74,11 +74,11 @@ func (t *Telegram) sendMessage(chatID int64, text string) error {
 func (t *Telegram) deleteLastMessage(chatID int64) {
 	msg := tgbotapi.DeleteMessageConfig{
 		ChatID:    chatID,
-		MessageID: lastMessageID[chatID],
+		MessageID: LastMessageID[chatID],
 	}
 
 	if _, err := t.Bot.Request(msg); err != nil {
 		log.Printf("Ошибка удаления сообщения: %v\n", err)
 	}
-	delete(lastMessageID, chatID)
+	delete(LastMessageID, chatID)
 }

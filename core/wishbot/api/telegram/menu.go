@@ -44,8 +44,8 @@ func (t *Telegram) sendInlineMenu(chatID int64) {
 	if err != nil {
 		log.Println("Ошибка при отправке встроенного меню:", err)
 	}
-	delete(lastMessageID, chatID)
-	lastMessageID[chatID] = m.MessageID
+	delete(LastMessageID, chatID)
+	LastMessageID[chatID] = m.MessageID
 }
 
 func (t *Telegram) sendSkipButton(chatID int64) {

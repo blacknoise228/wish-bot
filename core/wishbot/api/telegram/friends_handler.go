@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"wish-bot/core/wishbot/api/telegram/state"
-	db "wish-bot/core/wishbot/db/sqlc"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -78,8 +77,8 @@ func (t *Telegram) friendsButton(chatID int64) {
 	if err != nil {
 		log.Println("Ошибка при отправке встроенного меню:", err)
 	}
-	delete(lastMessageID, chatID)
-	lastMessageID[chatID] = m.MessageID
+	delete(LastMessageID, chatID)
+	LastMessageID[chatID] = m.MessageID
 
 }
 
@@ -89,11 +88,8 @@ func (t *Telegram) approveFriendHandler(data string, chatID int64) {
 		senderID, _ := strconv.ParseInt(strID, 10, 64)
 
 		log.Println(senderID)
-		t.tgService.Services.Friend.UpdateFriendshipStatus(context.Background(), db.UpdateFriendshipStatusParams{
-			ChatID:   senderID,
-			FriendID: chatID,
-			Status:   1,
-		})
+
+		t.tgService.UpdateFriendshipStatus(senderID, chatID, 1)
 
 		t.sendMessage(chatID, "Запрос дружбы принят!")
 
@@ -103,11 +99,7 @@ func (t *Telegram) approveFriendHandler(data string, chatID int64) {
 		strID := strings.TrimPrefix(data, "decline:")
 		senderID, _ := strconv.ParseInt(strID, 10, 64)
 
-		t.tgService.Services.Friend.UpdateFriendshipStatus(context.Background(), db.UpdateFriendshipStatusParams{
-			ChatID:   senderID,
-			FriendID: chatID,
-			Status:   3,
-		})
+		t.tgService.Services.Friend.DeleteFriendship(context.Background(), senderID, chatID)
 
 		t.sendMessage(chatID, "Запрос дружбы отклонен!")
 

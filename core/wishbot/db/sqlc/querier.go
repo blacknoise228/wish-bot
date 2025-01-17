@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	CreateFriendship(ctx context.Context, arg CreateFriendshipParams) (Friend, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateUserInfo(ctx context.Context, arg CreateUserInfoParams) error
 	CreateWish(ctx context.Context, arg CreateWishParams) (Wish, error)
 	DeleteFriendship(ctx context.Context, arg DeleteFriendshipParams) error
 	DeleteUser(ctx context.Context, chatID int64) error

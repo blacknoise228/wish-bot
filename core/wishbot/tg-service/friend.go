@@ -37,12 +37,14 @@ func (t *TGService) CreateFriendship(ctx context.Context, chatID int64, friendNa
 	)
 	msg := tgbotapi.NewMessage(user.ChatID, "Пользователь "+user2.Username+" отправил вам запрос дружбы")
 	msg.ReplyMarkup = button
-	_, err = t.Bot.Send(msg)
+	m, err := t.Bot.Send(msg)
 	if err != nil {
 		return err
 	}
 
-	t.sendMessage(user.ChatID, "Пользователь отправил вам запрос дружбы")
+	if _, ok := lastMessage[user.ChatID]; !ok {
+		lastMessage[user.ChatID] = m.MessageID
+	}
 
 	t.sendMessage(chatID, "Запрос отправлен!")
 
@@ -63,7 +65,7 @@ func (t *TGService) GetUserFriends(ctx context.Context, chatID int64) {
 
 		buttons := tgbotapi.NewInlineKeyboardMarkup(
 			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Удалить друга", "delete_friend:+"+strconv.Itoa(int(friend.FriendID))),
+				tgbotapi.NewInlineKeyboardButtonData("Удалить друга", "delete_friend:"+strconv.Itoa(int(friend.FriendID))),
 				tgbotapi.NewInlineKeyboardButtonData("Желание друга", "get_wishes:"+friend.Username),
 			),
 		)
@@ -116,5 +118,22 @@ func (t *TGService) DeleteFriend(ctx context.Context, chatID int64, friendID int
 		t.sendMessage(chatID, "Ошибка при удалении дружбы")
 		return
 	}
+
+	err = t.Services.Friend.DeleteFriendship(ctx, friendID, chatID)
+	if err != nil {
+		t.sendMessage(chatID, "Ошибка при удалении дружбы")
+		return
+	}
+
 	t.sendMessage(chatID, "Дружба успешно удалена")
+}
+
+func (t *TGService) UpdateFriendshipStatus(senderID, chatID int64, status int32) {
+	t.Services.Friend.UpdateFriendshipStatus(context.Background(), db.UpdateFriendshipStatusParams{
+		ChatID:   senderID,
+		FriendID: chatID,
+		Status:   status,
+	})
+
+	t.deleteLastMessage(chatID)
 }

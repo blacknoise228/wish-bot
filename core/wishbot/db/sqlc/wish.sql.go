@@ -88,6 +88,7 @@ func (q *Queries) GetWish(ctx context.Context, arg GetWishParams) (Wish, error) 
 
 const getWishesForUser = `-- name: GetWishesForUser :many
 SELECT 
+    w.chat_id,
     w.description, 
     w.link, 
     d.status_name, 
@@ -101,6 +102,7 @@ WHERE w.chat_id = $1
 `
 
 type GetWishesForUserRow struct {
+	ChatID      int64     `json:"chat_id"`
 	Description string    `json:"description"`
 	Link        string    `json:"link"`
 	StatusName  string    `json:"status_name"`
@@ -119,6 +121,7 @@ func (q *Queries) GetWishesForUser(ctx context.Context, chatID int64) ([]GetWish
 	for rows.Next() {
 		var i GetWishesForUserRow
 		if err := rows.Scan(
+			&i.ChatID,
 			&i.Description,
 			&i.Link,
 			&i.StatusName,

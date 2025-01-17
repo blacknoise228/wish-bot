@@ -10,6 +10,7 @@ INSERT INTO wish (
 
 -- name: GetWishesForUser :many
 SELECT 
+    w.chat_id,
     w.description, 
     w.link, 
     d.status_name, 

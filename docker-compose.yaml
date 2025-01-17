@@ -12,8 +12,9 @@ services:
     restart: always
 
   wishbot:
-    build:
-      context: .
+    image: ghcr.io/blacknoise228/wish-bot:latest
+    pull_policy: always
+
     environment:
       - TZ=Asia/Almaty
       - WISHBOT_TELEGRAM_TOKEN=${WISHBOT_TELEGRAM_TOKEN}
@@ -29,8 +30,8 @@ services:
     command: wishbot
 
   shop:
-    build:
-      context: .
+    image: ghcr.io/blacknoise228/wish-bot:latest
+    pull_policy: always
     environment:
       - TZ=Asia/Almaty
       - SHOP_TELEGRAM_TOKEN=${SHOP_TELEGRAM_TOKEN}

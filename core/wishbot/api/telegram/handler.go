@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	lastMessageID = make(map[int64]int)
+	LastMessageID = make(map[int64]int)
 	userWishData  = make(map[int64]map[string]string)
 )
 

@@ -43,12 +43,14 @@ func (t *Telegram) messageUsersHandler(ctx context.Context, states string, messa
 	switch states {
 
 	case state.CreateUserWaiting:
-		if err := t.tgService.CreateUserHandler(ctx, message); err != nil {
-			log.Println(err)
-			return
+		if message.Text != "Меню" {
+			if err := t.tgService.CreateUserHandler(ctx, message); err != nil {
+				log.Println(err)
+				return
+			}
+			t.sendInlineMenu(message.Chat.ID)
 		}
 		state.ClearUserState(message.Chat.ID)
-		t.sendInlineMenu(message.Chat.ID)
 
 	case state.UpdateUserWaiting:
 		if err := t.tgService.UpdateUserHandler(ctx, message); err != nil {
@@ -73,6 +75,6 @@ func (t *Telegram) deleteButton(chatID int64) {
 	if err != nil {
 		log.Println("Ошибка при отправке встроенного меню:", err)
 	}
-	delete(lastMessageID, chatID)
-	lastMessageID[chatID] = m.MessageID
+	delete(LastMessageID, chatID)
+	LastMessageID[chatID] = m.MessageID
 }
