@@ -15,22 +15,24 @@ $1, $2, $3, $4, $5, $6, $7, $8
 -- name: UpdateOrderStatus :exec
 UPDATE orders
 SET 
-status = $1,
+status = $3,
 updated_at = now()
-WHERE id = $2 AND admin_id = $3
+WHERE customer_id = $2 and id = $1
 RETURNING *;
-
--- name: GetOrdersByShop :many
-SELECT * FROM orders
-WHERE shop_id = $1;
-
--- name: GetOrdersByAdmin :many
-SELECT * FROM orders
-WHERE admin_id = $1;
 
 -- name: GetOrder :one
 SELECT * FROM orders
 WHERE id = $1 LIMIT 1;
+
+-- name: GetOrdersByCustomer :many
+SELECT * FROM orders
+WHERE customer_id = $1;
+
+-- name: GetRandomAdminByShopID :one
+SELECT * FROM shop_admins
+WHERE shop_id = $1
+ORDER BY random()
+LIMIT 1;
 
 -- name: GetDimOrderStatusByID :one
 SELECT * FROM dim_order_status

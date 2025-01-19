@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 	"wish-bot/core/wishbot/api/telegram/state"
-	tgservice "wish-bot/core/wishbot/tg-service"
+	"wish-bot/core/wishbot/service"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -18,17 +18,17 @@ func (t *Telegram) callbackUsersHandler(query *tgbotapi.CallbackQuery) {
 	case "register":
 		go t.deleteLastMessage(chatID)
 		state.SetUserState(chatID, state.CreateUserWaiting)
-		t.sendMessage(chatID, tgservice.CreateNicknameMessage)
+		t.sendMessage(chatID, service.CreateNicknameMessage)
 	case "edit_nickname":
 		go t.deleteLastMessage(chatID)
 		state.SetUserState(chatID, state.UpdateUserWaiting)
-		t.sendMessage(chatID, tgservice.UpdateUserMessage)
+		t.sendMessage(chatID, service.UpdateUserMessage)
 	case "delete_user":
-		t.sendMessage(chatID, tgservice.DeleteUserMessage)
+		t.sendMessage(chatID, service.DeleteUserMessage)
 		t.deleteButton(chatID)
 	case "yes_delete":
 		go t.deleteLastMessage(chatID)
-		if err := t.tgService.DeleteUserHandler(query); err != nil {
+		if err := t.Service.DeleteUserHandler(query); err != nil {
 			log.Println("Deleting user error: ", err)
 			t.sendMessage(chatID, "Ошибка. Попробуйте позже.")
 			return
@@ -44,7 +44,7 @@ func (t *Telegram) messageUsersHandler(ctx context.Context, states string, messa
 
 	case state.CreateUserWaiting:
 		if message.Text != "Меню" {
-			if err := t.tgService.CreateUserHandler(ctx, message); err != nil {
+			if err := t.Service.CreateUserHandler(ctx, message); err != nil {
 				log.Println(err)
 				return
 			}
@@ -53,7 +53,7 @@ func (t *Telegram) messageUsersHandler(ctx context.Context, states string, messa
 		state.ClearUserState(message.Chat.ID)
 
 	case state.UpdateUserWaiting:
-		if err := t.tgService.UpdateUserHandler(ctx, message); err != nil {
+		if err := t.Service.UpdateUserHandler(ctx, message); err != nil {
 			log.Println(err)
 			return
 		}

@@ -1,4 +1,4 @@
-package tgservice
+package service
 
 import (
 	"context"
@@ -10,13 +10,13 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func (t *TGService) CreateFriendship(ctx context.Context, chatID int64, friendName string) error {
-	user, err := t.Services.User.GetUserByUsername(ctx, friendName)
+func (t *Service) CreateFriendship(ctx context.Context, chatID int64, friendName string) error {
+	user, err := t.DB.GetUserByUsername(ctx, friendName)
 	if err != nil {
 		t.sendMessage(chatID, "Такого пользователя не существует!")
 		return err
 	}
-	_, err = t.Services.Friend.CreateFriendship(ctx, db.CreateFriendshipParams{
+	_, err = t.DB.CreateFriendship(ctx, db.CreateFriendshipParams{
 		ChatID:   chatID,
 		FriendID: user.ChatID,
 	})
@@ -25,7 +25,7 @@ func (t *TGService) CreateFriendship(ctx context.Context, chatID int64, friendNa
 		t.sendMessage(chatID, "Ошибка отправки запроса дружбы")
 		return err
 	}
-	user2, _ := t.Services.User.GetUser(ctx, chatID)
+	user2, _ := t.DB.GetUser(ctx, chatID)
 
 	id := strconv.FormatInt(chatID, 10)
 
@@ -51,8 +51,8 @@ func (t *TGService) CreateFriendship(ctx context.Context, chatID int64, friendNa
 	return nil
 }
 
-func (t *TGService) GetUserFriends(ctx context.Context, chatID int64) {
-	friends, err := t.Services.Friend.GetAprovedFriendships(ctx, chatID)
+func (t *Service) GetUserFriends(ctx context.Context, chatID int64) {
+	friends, err := t.DB.GetAprovedFriendships(ctx, chatID)
 	if err != nil {
 		t.sendMessage(chatID, "У вас нет друзей!\nAXAXAXAX")
 		return
@@ -81,8 +81,8 @@ func (t *TGService) GetUserFriends(ctx context.Context, chatID int64) {
 	}
 }
 
-func (t *TGService) GetPendingFriends(ctx context.Context, chatID int64) {
-	friends, err := t.Services.Friend.GetPendingFriendships(ctx, chatID)
+func (t *Service) GetPendingFriends(ctx context.Context, chatID int64) {
+	friends, err := t.DB.GetPendingFriendships(ctx, chatID)
 	if err != nil {
 		t.sendMessage(chatID, "У вас нет друзей!\nAXAXAXAX")
 		return
@@ -111,15 +111,15 @@ func (t *TGService) GetPendingFriends(ctx context.Context, chatID int64) {
 	}
 }
 
-func (t *TGService) DeleteFriend(ctx context.Context, chatID int64, friendID int64) {
+func (t *Service) DeleteFriend(ctx context.Context, chatID int64, friendID int64) {
 
-	err := t.Services.Friend.DeleteFriendship(ctx, chatID, friendID)
+	err := t.DB.DeleteFriendship(ctx, db.DeleteFriendshipParams{ChatID: chatID, FriendID: friendID})
 	if err != nil {
 		t.sendMessage(chatID, "Ошибка при удалении дружбы")
 		return
 	}
 
-	err = t.Services.Friend.DeleteFriendship(ctx, friendID, chatID)
+	err = t.DB.DeleteFriendship(ctx, db.DeleteFriendshipParams{ChatID: friendID, FriendID: chatID})
 	if err != nil {
 		t.sendMessage(chatID, "Ошибка при удалении дружбы")
 		return
@@ -128,8 +128,8 @@ func (t *TGService) DeleteFriend(ctx context.Context, chatID int64, friendID int
 	t.sendMessage(chatID, "Дружба успешно удалена")
 }
 
-func (t *TGService) UpdateFriendshipStatus(senderID, chatID int64, status int32) {
-	t.Services.Friend.UpdateFriendshipStatus(context.Background(), db.UpdateFriendshipStatusParams{
+func (t *Service) UpdateFriendshipStatus(senderID, chatID int64, status int32) {
+	t.DB.UpdateFriendshipStatus(context.Background(), db.UpdateFriendshipStatusParams{
 		ChatID:   senderID,
 		FriendID: chatID,
 		Status:   status,

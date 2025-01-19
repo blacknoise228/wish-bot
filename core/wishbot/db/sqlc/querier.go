@@ -6,10 +6,13 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
 	CreateFriendship(ctx context.Context, arg CreateFriendshipParams) (Friend, error)
+	CreateOrder(ctx context.Context, arg CreateOrderParams) (Order, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateUserInfo(ctx context.Context, arg CreateUserInfoParams) error
 	CreateWish(ctx context.Context, arg CreateWishParams) (Wish, error)
@@ -17,16 +20,23 @@ type Querier interface {
 	DeleteUser(ctx context.Context, chatID int64) error
 	DeleteWish(ctx context.Context, arg DeleteWishParams) error
 	GetAprovedFriendships(ctx context.Context, chatID int64) ([]GetAprovedFriendshipsRow, error)
+	GetDimOrderStatusByID(ctx context.Context, id int32) (DimOrderStatus, error)
 	GetFriendship(ctx context.Context, arg GetFriendshipParams) (Friend, error)
+	GetOrder(ctx context.Context, id uuid.UUID) (Order, error)
+	GetOrdersByCustomer(ctx context.Context, customerID int64) ([]Order, error)
 	GetPendingFriendships(ctx context.Context, chatID int64) ([]GetPendingFriendshipsRow, error)
+	GetProductByID(ctx context.Context, id uuid.UUID) (Product, error)
+	GetProductsByCategory(ctx context.Context, categoryID int32) ([]Product, error)
+	GetRandomAdminByShopID(ctx context.Context, shopID uuid.UUID) (ShopAdmin, error)
 	GetUser(ctx context.Context, chatID int64) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetWish(ctx context.Context, arg GetWishParams) (Wish, error)
+	GetWishByID(ctx context.Context, id int32) (Wish, error)
 	GetWishesForUser(ctx context.Context, chatID int64) ([]GetWishesForUserRow, error)
 	GetWishesPublic(ctx context.Context, arg GetWishesPublicParams) ([]GetWishesPublicRow, error)
 	UpdateFriendshipStatus(ctx context.Context, arg UpdateFriendshipStatusParams) (Friend, error)
+	UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
-	UpdateWish(ctx context.Context, arg UpdateWishParams) (Wish, error)
 	UpdateWishStatus(ctx context.Context, arg UpdateWishStatusParams) (Wish, error)
 }
 

@@ -47,8 +47,8 @@ services:
     command: shop
 
   migration:
-    build:
-      context: .
+    image: ghcr.io/blacknoise228/wish-bot:latest
+    pull_policy: always
     environment:
       - WISHBOT_POSTGRES_HOST=postgresdb:5432
       - WISHBOT_APP_ENVIRONMENT=stage

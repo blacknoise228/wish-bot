@@ -168,7 +168,7 @@ func (q *Queries) GetShopByID(ctx context.Context, id uuid.UUID) (Shop, error) {
 
 const getShopByToken = `-- name: GetShopByToken :one
 SELECT id, name, description, image, token, created_at, updated_at FROM shop
-WHERE token = $1 LIMIT 1
+WHERE token = $1
 `
 
 func (q *Queries) GetShopByToken(ctx context.Context, token string) (Shop, error) {

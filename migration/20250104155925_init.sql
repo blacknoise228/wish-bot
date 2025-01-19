@@ -19,8 +19,7 @@ CREATE TABLE IF NOT EXISTS "wish" (
     id serial NOT NULL PRIMARY KEY,
     chat_id bigint NOT NULL,
     created_at timestamptz NOT NULL DEFAULT (now()),
-    description varchar NOT NULL,
-    link varchar NOT NULL,
+    product_id uuid NOT NULL,
     status integer NOT NULL
 );
 

@@ -27,6 +27,8 @@ func (t *Telegram) handleCallback(query *tgbotapi.CallbackQuery) {
 
 	t.callbackUsersHandler(query)
 
+	t.callbackOrderHandler(query)
+
 	callback := tgbotapi.NewCallback(query.ID, "Ждем...")
 	if _, err := t.Bot.Request(callback); err != nil {
 		log.Println("Ошибка при обработке CallbackQuery:", err)
@@ -49,8 +51,7 @@ func (t *Telegram) handleMessage(ctx context.Context, message *tgbotapi.Message)
 
 	switch message.Text {
 	case "/start":
-		t.tgService.StartMessageHandler(message)
-		t.sendMenuButton(message.Chat.ID)
+		t.Service.StartMessageHandler(message)
 	case "Меню":
 		state.ClearUserState(message.Chat.ID)
 		t.sendInlineMenu(message.Chat.ID)

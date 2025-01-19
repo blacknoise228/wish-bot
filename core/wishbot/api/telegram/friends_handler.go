@@ -25,11 +25,11 @@ func (t *Telegram) callbackFriendHandler(query *tgbotapi.CallbackQuery) {
 	case "my_friends":
 		go t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, "Ваши друзья:")
-		t.tgService.GetUserFriends(context.Background(), chatID)
+		t.Service.GetUserFriends(context.Background(), chatID)
 	case "pending_friends":
 		t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, "Ваши запросы в друзья:")
-		t.tgService.GetPendingFriends(context.Background(), chatID)
+		t.Service.GetPendingFriends(context.Background(), chatID)
 	}
 
 	t.approveFriendHandler(query.Data, chatID)
@@ -38,12 +38,12 @@ func (t *Telegram) callbackFriendHandler(query *tgbotapi.CallbackQuery) {
 		strID := strings.TrimPrefix(query.Data, "delete_friend:")
 		senderID, _ := strconv.ParseInt(strID, 10, 64)
 
-		t.tgService.DeleteFriend(context.Background(), chatID, senderID)
+		t.Service.DeleteFriend(context.Background(), chatID, senderID)
 	}
 	if strings.HasPrefix(query.Data, "get_wishes:") {
 		userName := strings.TrimPrefix(query.Data, "get_wishes:")
 
-		t.tgService.GetUserWishes(chatID, userName)
+		t.Service.GetUserWishes(chatID, userName)
 	}
 }
 
@@ -52,7 +52,7 @@ func (t *Telegram) messageFriendHandler(ctx context.Context, states string, mess
 	switch states {
 
 	case state.AddFriendWait:
-		t.tgService.CreateFriendship(ctx, message.Chat.ID, message.Text)
+		t.Service.CreateFriendship(ctx, message.Chat.ID, message.Text)
 		state.ClearUserState(message.Chat.ID)
 	}
 }
@@ -89,7 +89,7 @@ func (t *Telegram) approveFriendHandler(data string, chatID int64) {
 
 		log.Println(senderID)
 
-		t.tgService.UpdateFriendshipStatus(senderID, chatID, 1)
+		t.Service.UpdateFriendshipStatus(senderID, chatID, 1)
 
 		t.sendMessage(chatID, "Запрос дружбы принят!")
 
@@ -99,7 +99,7 @@ func (t *Telegram) approveFriendHandler(data string, chatID int64) {
 		strID := strings.TrimPrefix(data, "decline:")
 		senderID, _ := strconv.ParseInt(strID, 10, 64)
 
-		t.tgService.Services.Friend.DeleteFriendship(context.Background(), senderID, chatID)
+		t.Service.DeleteFriend(context.Background(), senderID, chatID)
 
 		t.sendMessage(chatID, "Запрос дружбы отклонен!")
 
