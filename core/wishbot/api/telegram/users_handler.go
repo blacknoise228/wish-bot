@@ -84,7 +84,8 @@ func (t *Telegram) createUserHandlerMessage(ctx context.Context, states string, 
 				log.Println(errornator.CustomError(err.Error()))
 				return
 			}
-			t.sendMessage(message.Chat.ID, "Введите ваш адрес или отправьте ссылку 2гис. Он нужен для службы доставки. Другие пользователи его никак не увидят.")
+			t.sendMessage(message.Chat.ID,
+				"Введите ваш адрес или отправьте ссылку 2гис. Он нужен для службы доставки. Другие пользователи его никак не увидят.")
 			state.SetUserState(message.Chat.ID, state.CreateUserAdress)
 		}
 
