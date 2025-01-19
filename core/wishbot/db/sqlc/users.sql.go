@@ -7,8 +7,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -45,11 +43,11 @@ INSERT INTO user_info (
 `
 
 type CreateUserInfoParams struct {
-	ChatID      int64       `json:"chat_id"`
-	Address     pgtype.Text `json:"address"`
-	Phone       pgtype.Text `json:"phone"`
-	Name        pgtype.Text `json:"name"`
-	Description pgtype.Text `json:"description"`
+	ChatID      int64  `json:"chat_id"`
+	Address     string `json:"address"`
+	Phone       string `json:"phone"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 func (q *Queries) CreateUserInfo(ctx context.Context, arg CreateUserInfoParams) error {
@@ -114,4 +112,68 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	var i User
 	err := row.Scan(&i.Username, &i.ChatID, &i.CreatedAt)
 	return i, err
+}
+
+const updateUserInfoAddress = `-- name: UpdateUserInfoAddress :exec
+UPDATE user_info 
+SET address = $1
+WHERE chat_id = $2
+`
+
+type UpdateUserInfoAddressParams struct {
+	Address string `json:"address"`
+	ChatID  int64  `json:"chat_id"`
+}
+
+func (q *Queries) UpdateUserInfoAddress(ctx context.Context, arg UpdateUserInfoAddressParams) error {
+	_, err := q.db.Exec(ctx, updateUserInfoAddress, arg.Address, arg.ChatID)
+	return err
+}
+
+const updateUserInfoDescription = `-- name: UpdateUserInfoDescription :exec
+UPDATE user_info 
+SET description = $1
+WHERE chat_id = $2
+`
+
+type UpdateUserInfoDescriptionParams struct {
+	Description string `json:"description"`
+	ChatID      int64  `json:"chat_id"`
+}
+
+func (q *Queries) UpdateUserInfoDescription(ctx context.Context, arg UpdateUserInfoDescriptionParams) error {
+	_, err := q.db.Exec(ctx, updateUserInfoDescription, arg.Description, arg.ChatID)
+	return err
+}
+
+const updateUserInfoName = `-- name: UpdateUserInfoName :exec
+UPDATE user_info 
+SET name = $1
+WHERE chat_id = $2
+`
+
+type UpdateUserInfoNameParams struct {
+	Name   string `json:"name"`
+	ChatID int64  `json:"chat_id"`
+}
+
+func (q *Queries) UpdateUserInfoName(ctx context.Context, arg UpdateUserInfoNameParams) error {
+	_, err := q.db.Exec(ctx, updateUserInfoName, arg.Name, arg.ChatID)
+	return err
+}
+
+const updateUserInfoPhone = `-- name: UpdateUserInfoPhone :exec
+UPDATE user_info 
+SET phone = $1
+WHERE chat_id = $2
+`
+
+type UpdateUserInfoPhoneParams struct {
+	Phone  string `json:"phone"`
+	ChatID int64  `json:"chat_id"`
+}
+
+func (q *Queries) UpdateUserInfoPhone(ctx context.Context, arg UpdateUserInfoPhoneParams) error {
+	_, err := q.db.Exec(ctx, updateUserInfoPhone, arg.Phone, arg.ChatID)
+	return err
 }

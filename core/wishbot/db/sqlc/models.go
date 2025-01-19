@@ -97,10 +97,10 @@ type User struct {
 
 type UserInfo struct {
 	ChatID      int64            `json:"chat_id"`
-	Address     pgtype.Text      `json:"address"`
-	Phone       pgtype.Text      `json:"phone"`
-	Name        pgtype.Text      `json:"name"`
-	Description pgtype.Text      `json:"description"`
+	Address     string           `json:"address"`
+	Phone       string           `json:"phone"`
+	Name        string           `json:"name"`
+	Description string           `json:"description"`
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }

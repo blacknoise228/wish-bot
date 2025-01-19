@@ -40,11 +40,6 @@ func (t *Telegram) callbackFriendHandler(query *tgbotapi.CallbackQuery) {
 
 		t.Service.DeleteFriend(context.Background(), chatID, senderID)
 	}
-	if strings.HasPrefix(query.Data, "get_wishes:") {
-		userName := strings.TrimPrefix(query.Data, "get_wishes:")
-
-		t.Service.GetUserWishes(chatID, userName)
-	}
 }
 
 func (t *Telegram) messageFriendHandler(ctx context.Context, states string, message *tgbotapi.Message) {

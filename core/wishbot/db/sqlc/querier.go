@@ -37,6 +37,10 @@ type Querier interface {
 	UpdateFriendshipStatus(ctx context.Context, arg UpdateFriendshipStatusParams) (Friend, error)
 	UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
+	UpdateUserInfoAddress(ctx context.Context, arg UpdateUserInfoAddressParams) error
+	UpdateUserInfoDescription(ctx context.Context, arg UpdateUserInfoDescriptionParams) error
+	UpdateUserInfoName(ctx context.Context, arg UpdateUserInfoNameParams) error
+	UpdateUserInfoPhone(ctx context.Context, arg UpdateUserInfoPhoneParams) error
 	UpdateWishStatus(ctx context.Context, arg UpdateWishStatusParams) (Wish, error)
 }
 
