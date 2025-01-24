@@ -2,12 +2,12 @@ package telegram
 
 import (
 	"log"
+	"wish-bot/core/wishbot/api/telegram/state"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func (t *Telegram) sendMenuButton(chatID int64) {
-
 	buttons := tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton("Меню"),
 	)
@@ -20,6 +20,7 @@ func (t *Telegram) sendMenuButton(chatID int64) {
 }
 
 func (t *Telegram) sendInlineMenu(chatID int64) {
+	state.ClearUserState(chatID)
 	t.sendMenuButton(chatID)
 	buttons := tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
@@ -33,10 +34,11 @@ func (t *Telegram) sendInlineMenu(chatID int64) {
 			tgbotapi.NewInlineKeyboardButtonData("Друзья", "friends"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Добавить желания", "add_wish"),
+			tgbotapi.NewInlineKeyboardButtonData("Каталог продуктов", "catalog"),
 			tgbotapi.NewInlineKeyboardButtonData("Мои желания", "my_wishes"),
 		),
 	)
+
 	msg := tgbotapi.NewMessage(chatID, "Выберите действие: ")
 	msg.ReplyMarkup = buttons
 
@@ -46,17 +48,4 @@ func (t *Telegram) sendInlineMenu(chatID int64) {
 	}
 	delete(LastMessageID, chatID)
 	LastMessageID[chatID] = m.MessageID
-}
-
-func (t *Telegram) sendSkipButton(chatID int64) {
-
-	buttons := tgbotapi.NewKeyboardButtonRow(
-		tgbotapi.NewKeyboardButton("Пропустить"),
-	)
-	msg := tgbotapi.NewMessage(chatID, "...")
-	msg.ReplyMarkup = tgbotapi.NewReplyKeyboard(buttons)
-
-	if _, err := t.Bot.Send(msg); err != nil {
-		log.Println("Ошибка при отправке встроенного меню:", err)
-	}
 }

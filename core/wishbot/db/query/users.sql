@@ -17,6 +17,26 @@ INSERT INTO user_info (
     $1, $2, $3, $4, $5
 );
 
+-- name: UpdateUserInfoAddress :exec
+UPDATE user_info 
+SET address = $1
+WHERE chat_id = $2;
+
+-- name: UpdateUserInfoPhone :exec
+UPDATE user_info 
+SET phone = $1
+WHERE chat_id = $2;
+
+-- name: UpdateUserInfoName :exec
+UPDATE user_info 
+SET name = $1
+WHERE chat_id = $2;
+
+-- name: UpdateUserInfoDescription :exec
+UPDATE user_info 
+SET description = $1
+WHERE chat_id = $2;
+
 -- name: GetUser :one
 SELECT * FROM users
 WHERE chat_id = $1 LIMIT 1;

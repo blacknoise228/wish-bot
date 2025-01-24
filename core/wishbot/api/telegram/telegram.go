@@ -5,29 +5,29 @@ import (
 	"log"
 	"sync"
 	"wish-bot/core/wishbot/config"
+	db "wish-bot/core/wishbot/db/sqlc"
 	"wish-bot/core/wishbot/service"
-	tgservice "wish-bot/core/wishbot/tg-service"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type Telegram struct {
-	Bot       *tgbotapi.BotAPI
-	tgService *tgservice.TGService
+	Bot     *tgbotapi.BotAPI
+	Service *service.Service
 }
 
-func NewTelegram(cfg *config.Config, services *service.Services) *Telegram {
+func NewTelegram(cfg *config.Config, db *db.SQLStore) *Telegram {
 
 	bot, err := tgbotapi.NewBotAPI(cfg.Telegram.Token)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	tgservice := tgservice.NewTGService(bot, services)
+	srvs := service.NewService(bot, db.Queries)
 
 	return &Telegram{
-		Bot:       bot,
-		tgService: tgservice,
+		Bot:     bot,
+		Service: srvs,
 	}
 }
 

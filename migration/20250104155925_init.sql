@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS "wish" (
     id serial NOT NULL PRIMARY KEY,
     chat_id bigint NOT NULL,
     created_at timestamptz NOT NULL DEFAULT (now()),
-    description varchar NOT NULL,
-    link varchar NOT NULL,
-    status integer NOT NULL
+    product_id uuid NOT NULL,
+    status integer NOT NULL,
+    PRIMARY KEY (chat_id, product_id)
 );
 
 CREATE TABLE IF NOT EXISTS "dim_friend_status" (
@@ -46,6 +46,8 @@ CREATE TABLE IF NOT EXISTS "friends" (
 ALTER TABLE IF EXISTS "wish" ADD FOREIGN KEY ("chat_id") REFERENCES "users" ("chat_id");
 
 ALTER TABLE IF EXISTS "wish" ADD FOREIGN KEY ("status") REFERENCES "dim_wish_status" ("id");
+
+ALTER TABLE IF EXISTS "wish" ADD FOREIGN KEY ("product_id") REFERENCES "product" ("id");
 
 ALTER TABLE IF EXISTS "friends" ADD FOREIGN KEY ("chat_id") REFERENCES "users" ("chat_id");
 

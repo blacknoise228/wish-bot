@@ -86,10 +86,10 @@ create table if not exists "orders" (
 
 create table if not exists "user_info" (
     chat_id bigint not null primary key unique,
-    address varchar(255),
-    phone varchar(255),
-    name varchar(255),
-    description varchar(255),
+    address varchar(255) not null,
+    phone varchar(255) not null,
+    name varchar(255) not null,
+    description varchar(255) not null,
     created_at timestamp default now(),
     updated_at timestamp,
     foreign key (chat_id) references "users" (chat_id)

@@ -106,10 +106,9 @@ type UserInfo struct {
 }
 
 type Wish struct {
-	ID          int32     `json:"id"`
-	ChatID      int64     `json:"chat_id"`
-	CreatedAt   time.Time `json:"created_at"`
-	Description string    `json:"description"`
-	Link        string    `json:"link"`
-	Status      int32     `json:"status"`
+	ID        int32     `json:"id"`
+	ChatID    int64     `json:"chat_id"`
+	CreatedAt time.Time `json:"created_at"`
+	ProductID uuid.UUID `json:"product_id"`
+	Status    int32     `json:"status"`
 }

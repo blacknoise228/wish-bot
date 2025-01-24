@@ -2,18 +2,12 @@ package state
 
 const (
 	CreateUserWaiting = "create_user_waiting"
+	CreateUserAdress  = "create_user_adress"
+	CreateUserName    = "create_user_name"
+	CreateUserPhone   = "create_user_phone"
 	UpdateUserWaiting = "update_user_waiting"
-	AddWishWait       = "add_wish_wait"
-	AddWishDesc       = "add_wish_desc"
-	AddWishLink       = "add_wish_link"
-	AddWishStat       = "add_wish_stat"
 	GetUserWish       = "get_user_wish"
-	DeleteWish        = "delete_wish"
 	AddFriendWait     = "add_friend_wait"
-	RemoveFriendWait  = "remove_friend_wait"
-	UpdateWishDesc    = "update_wish_desc"
-	UpdateWishLink    = "update_wish_link"
-	UpdateWishStat    = "update_wish_stat"
 )
 
 var UserStates = make(map[int64]string)

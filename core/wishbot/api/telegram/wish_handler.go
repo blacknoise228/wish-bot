@@ -3,52 +3,56 @@ package telegram
 import (
 	"strings"
 	"wish-bot/core/wishbot/api/telegram/state"
-	tgservice "wish-bot/core/wishbot/tg-service"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/google/uuid"
 )
 
 func (t *Telegram) callbackWishHandler(query *tgbotapi.CallbackQuery) {
 
 	chatID := query.Message.Chat.ID
 
-	wishMap := userWishData[chatID]
-
 	switch query.Data {
 	case "user_wishes":
 		go t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, "Введите имя пользователя:")
 		state.SetUserState(chatID, state.GetUserWish)
-	case "delete_wish":
-		go t.deleteLastMessage(chatID)
-		t.sendMessage(chatID, "Введите ID желания:")
-		state.SetUserState(chatID, state.DeleteWish)
-	case "add_wish":
-		go t.deleteLastMessage(chatID)
-		t.sendMessage(chatID, tgservice.AddWishMessage)
-		t.sendMessage(chatID, "Введите описание желания")
-		t.sendSkipButton(chatID)
-		state.SetUserState(chatID, state.AddWishDesc)
+
 	case "my_wishes":
 		go t.deleteLastMessage(chatID)
 		t.sendMessage(chatID, "Ваши желания: ")
-		t.tgService.GetMyWishes(chatID)
-	case "edit_wish":
-		go t.deleteLastMessage(chatID)
-		t.sendMessage(chatID, "Введите описание желания")
-		state.SetUserState(chatID, state.UpdateWishDesc)
+		t.Service.GetMyWishes(chatID)
+
 	}
 	if strings.HasPrefix(query.Data, "update_wish:") {
 		id := strings.TrimPrefix(query.Data, "update_wish:")
-		wishMap["wish_id"] = id
-
-		t.sendMessage(chatID, "Введите описание желания")
-		t.sendSkipButton(chatID)
-		state.SetUserState(chatID, state.UpdateWishDesc)
+		t.Service.UpdateWish(chatID, id)
 	}
 	if strings.HasPrefix(query.Data, "remove_wish:") {
 		id := strings.TrimPrefix(query.Data, "remove_wish:")
-		t.tgService.DeleteWish(chatID, id)
+		t.Service.DeleteWish(chatID, id)
+	}
+
+	if strings.HasPrefix(query.Data, "get_wishes:") {
+		userName := strings.TrimPrefix(query.Data, "get_wishes:")
+
+		t.Service.GetUserWishes(chatID, userName)
+	}
+
+	if strings.HasPrefix(query.Data, "add_wish_private:") {
+		productID := strings.TrimPrefix(query.Data, "add_wish_private:")
+
+		id := uuid.MustParse(productID)
+
+		t.Service.CreateWish(chatID, id, 2)
+	}
+
+	if strings.HasPrefix(query.Data, "add_wish_public:") {
+		productID := strings.TrimPrefix(query.Data, "add_wish_public:")
+
+		id := uuid.MustParse(productID)
+
+		t.Service.CreateWish(chatID, id, 1)
 	}
 }
 
@@ -56,65 +60,11 @@ func (t *Telegram) messageWishHandler(states string, message *tgbotapi.Message) 
 
 	chatID := message.Chat.ID
 
-	wishMap := userWishData[chatID]
-
 	switch states {
 
-	case state.AddWishDesc:
-		if message.Text != "Пропустить" {
-			wishMap["desc"] = message.Text
-		}
-		state.SetUserState(chatID, state.AddWishLink)
-		t.sendMessage(chatID, "Добавьте ссылку")
-	case state.AddWishLink:
-		t.sendSkipButton(chatID)
-		if message.Text != "Пропустить" {
-			wishMap["link"] = message.Text
-		}
-		state.SetUserState(chatID, state.AddWishStat)
-		t.sendMessage(chatID, "Выберите тип желания:\n1. Публичный\n2. Приватный\nВведите число соответствующее типу желания.")
-	case state.AddWishStat:
-		wishMap["status"] = message.Text
-		t.tgService.CreateWish(chatID, wishMap)
-		t.sendInlineMenu(chatID)
-		t.sendMenuButton(chatID)
-		clearWishMap(wishMap)
-		state.ClearUserState(chatID)
-
-	case state.UpdateWishDesc:
-		if message.Text != "Пропустить" {
-			wishMap["desc"] = message.Text
-		}
-		state.SetUserState(chatID, state.UpdateWishLink)
-		t.sendMessage(chatID, "Добавьте ссылку")
-	case state.UpdateWishLink:
-		t.sendSkipButton(chatID)
-		if message.Text != "Пропустить" {
-			wishMap["link"] = message.Text
-		}
-		state.SetUserState(chatID, state.UpdateWishStat)
-		t.sendMessage(chatID, "Выберите тип желания:\n1. Публичный\n2. Приватный\nВведите число соответствующее типу желания.")
-	case state.UpdateWishStat:
-		wishMap["status"] = message.Text
-		t.tgService.UpdateWish(chatID, wishMap)
-		t.sendInlineMenu(chatID)
-		t.sendMenuButton(chatID)
-		clearWishMap(wishMap)
-		state.ClearUserState(chatID)
-
 	case state.GetUserWish:
-		t.tgService.GetUserWishes(chatID, message.Text)
+		t.Service.GetUserWishes(chatID, message.Text)
 		state.ClearUserState(chatID)
-
-	case state.DeleteWish:
-		t.tgService.DeleteWish(chatID, message.Text)
-		state.ClearUserState(chatID)
-		t.sendInlineMenu(chatID)
 	}
-}
 
-func clearWishMap(wishMap map[string]string) {
-	for key := range wishMap {
-		delete(wishMap, key)
-	}
 }

@@ -1,4 +1,4 @@
-package tgservice
+package service
 
 const (
 	StartMessage = `Привет! 👋 
