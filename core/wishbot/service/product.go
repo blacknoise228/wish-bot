@@ -29,7 +29,7 @@ func (s *Service) GetProductsByCategories(chatID int64, categoryID int32) {
 			),
 		)
 		resp := fmt.Sprintf("%v\nОписание: %v\nЦена: %v\nСтатус: %v",
-			product.Name, product.Description, product.Price, product.Status)
+			product.Name, product.Description, product.Price, product.CategoryName.String)
 		msg := tgbotapi.NewPhoto(chatID, tgbotapi.FileID(product.Image))
 		msg.Caption = resp
 		msg.ReplyMarkup = buttons
