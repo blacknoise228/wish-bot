@@ -29,6 +29,8 @@ func (t *Telegram) handleCallback(query *tgbotapi.CallbackQuery) {
 
 	t.callbackOrderHandler(query)
 
+	t.callbackProductsHandler(query)
+
 	callback := tgbotapi.NewCallback(query.ID, "Ждем...")
 	if _, err := t.Bot.Request(callback); err != nil {
 		log.Println("Ошибка при обработке CallbackQuery:", err)
