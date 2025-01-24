@@ -34,7 +34,7 @@ func (t *Telegram) sendInlineMenu(chatID int64) {
 			tgbotapi.NewInlineKeyboardButtonData("Друзья", "friends"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Добавить желания", "add_wish"),
+			tgbotapi.NewInlineKeyboardButtonData("Каталог продуктов", "catalog"),
 			tgbotapi.NewInlineKeyboardButtonData("Мои желания", "my_wishes"),
 		),
 	)
