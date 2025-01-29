@@ -132,6 +132,18 @@ func (o OrderService) UpdateOrderStatus(chatID int64, orderID uuid.UUID, status 
 		sendMessage(o.bot, chatID, "Ошибка при обновлении статуса заказа!")
 		return
 	}
+	if status == 2 {
+		userInfo, err := o.db.GetUserInfo(context.Background(), order.ConsigneeID)
+		if err != nil {
+			log.Println(errornator.CustomError("Ошибка при получении информации о пользователе!" + err.Error()))
+			sendMessage(o.bot, chatID, "Ошибка при получении информации о пользователе!")
+			return
+		}
+
+		resp := fmt.Sprintf("Заказ успешно оплачен!\nДанные для доставки:\nИмя получателя: %v\nТелефон получателя: %v\nАдрес доставки: %v\nКомментарий от получателя:\n%v",
+			userInfo.Name, userInfo.Phone, userInfo.Address, userInfo.Description)
+		sendMessage(o.bot, order.CustomerID, resp)
+	}
 
 	sendMessage(o.bot, chatID, "Статус заказа успешно обновлен!")
 }
