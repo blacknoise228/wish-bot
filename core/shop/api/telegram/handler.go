@@ -25,6 +25,7 @@ func (t *Telegram) handleCallback(query *tgbotapi.CallbackQuery) {
 
 	t.callbackProductHandler(query)
 	t.callbackShopHandler(query)
+	t.callbackOrderHandler(query)
 
 	log.Println(query.Message.Chat.ID, query.Data)
 
@@ -50,6 +51,7 @@ func (t *Telegram) handleMessage(message *tgbotapi.Message) {
 	t.createProductHandler(message, userstate)
 	t.updateProductHandler(message, userstate)
 	t.mesageShopHandler(message, userstate)
+	t.messageOrderHandler(message, userstate)
 
 	switch message.Text {
 	case "/start":

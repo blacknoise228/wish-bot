@@ -6,6 +6,7 @@ import (
 	"wish-bot/pkg/errornator"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/google/uuid"
 )
 
 type Service struct {
@@ -13,6 +14,7 @@ type Service struct {
 	db      *db.Queries
 	Product Producter
 	Shop    Shoper
+	Order   Order
 }
 
 func NewService(tgBot *tgbotapi.BotAPI, db *db.Queries) *Service {
@@ -21,6 +23,7 @@ func NewService(tgBot *tgbotapi.BotAPI, db *db.Queries) *Service {
 		db:      db,
 		Product: NewProduct(db, tgBot),
 		Shop:    NewShop(tgBot, db),
+		Order:   NewOrderService(db, tgBot),
 	}
 }
 
@@ -33,6 +36,13 @@ type Producter interface {
 type Shoper interface {
 	RegisterShopAdmin(chatID int64, token string)
 	DeleteShopAdmin(chatID int64)
+}
+
+type Order interface {
+	GetAdminOrders(chatID int64)
+	GetShopOrders(chatID int64)
+	UpdateOrderStatus(chatID int64, orderID uuid.UUID, status int32)
+	SendPayLink(chatID int64, orderID uuid.UUID, link string)
 }
 
 func sendMessage(bot *tgbotapi.BotAPI, chatID int64, text string) error {

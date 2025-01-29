@@ -69,8 +69,8 @@ func (t *Service) GetUserWishes(chatID int64, friendUsername string) {
 		return
 	}
 	wishes, err := t.DB.GetWishesPublic(context.Background(), db.GetWishesPublicParams{
-		ChatID:   chatID,
-		ChatID_2: friend.ChatID,
+		ChatID:   friend.ChatID,
+		ChatID_2: chatID,
 	})
 	if err != nil {
 		log.Println(errornator.CustomError("Ошибка при получении желаний!" + err.Error()))
@@ -94,7 +94,7 @@ func (t *Service) GetUserWishes(chatID int64, friendUsername string) {
 		)
 		resp := fmt.Sprintf("Имя пользователя: %v\nОписание: %v\nЦена: %v\nСтатус: %v",
 			wish.Username, product.Description, product.Price, wish.StatusName)
-		msg := tgbotapi.NewPhoto(chatID, tgbotapi.FileID(product.Image))
+		msg := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(product.Image))
 		msg.Caption = resp
 		msg.ReplyMarkup = buttons
 		_, err = t.Bot.Send(msg)

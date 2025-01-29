@@ -37,24 +37,35 @@ func (q *Queries) GetProductByID(ctx context.Context, id uuid.UUID) (Product, er
 }
 
 const getProductsByCategory = `-- name: GetProductsByCategory :many
-SELECT p.id, p.name, p.price, p.description, p.image, p.category_id, p.status, p.shop_id, p.admin_id, p.created_at, p.updated_at, c.category_name FROM product p
-LEFT JOIN dim_product_category c ON p.category_id = c.id
+SELECT p.name,
+ p.id,
+  p.price,
+  p.description,
+   p.status,
+   p.image,
+   p.category_id,
+   p.created_at,
+   p.updated_at,
+   p.shop_id,
+    p.admin_id,
+    s.status_name FROM product p
+LEFT JOIN dim_product_status s ON p.status = s.id
 WHERE p.category_id = $1
 `
 
 type GetProductsByCategoryRow struct {
-	ID           uuid.UUID        `json:"id"`
-	Name         string           `json:"name"`
-	Price        float64          `json:"price"`
-	Description  string           `json:"description"`
-	Image        string           `json:"image"`
-	CategoryID   int32            `json:"category_id"`
-	Status       int32            `json:"status"`
-	ShopID       uuid.UUID        `json:"shop_id"`
-	AdminID      int64            `json:"admin_id"`
-	CreatedAt    pgtype.Timestamp `json:"created_at"`
-	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
-	CategoryName pgtype.Text      `json:"category_name"`
+	Name        string           `json:"name"`
+	ID          uuid.UUID        `json:"id"`
+	Price       float64          `json:"price"`
+	Description string           `json:"description"`
+	Status      int32            `json:"status"`
+	Image       string           `json:"image"`
+	CategoryID  int32            `json:"category_id"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
+	ShopID      uuid.UUID        `json:"shop_id"`
+	AdminID     int64            `json:"admin_id"`
+	StatusName  pgtype.Text      `json:"status_name"`
 }
 
 func (q *Queries) GetProductsByCategory(ctx context.Context, categoryID int32) ([]GetProductsByCategoryRow, error) {
@@ -67,18 +78,18 @@ func (q *Queries) GetProductsByCategory(ctx context.Context, categoryID int32) (
 	for rows.Next() {
 		var i GetProductsByCategoryRow
 		if err := rows.Scan(
-			&i.ID,
 			&i.Name,
+			&i.ID,
 			&i.Price,
 			&i.Description,
+			&i.Status,
 			&i.Image,
 			&i.CategoryID,
-			&i.Status,
-			&i.ShopID,
-			&i.AdminID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.CategoryName,
+			&i.ShopID,
+			&i.AdminID,
+			&i.StatusName,
 		); err != nil {
 			return nil, err
 		}

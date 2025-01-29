@@ -21,12 +21,14 @@ WHERE id = $2 AND admin_id = $3
 RETURNING *;
 
 -- name: GetOrdersByShop :many
-SELECT * FROM orders
-WHERE shop_id = $1;
+SELECT * FROM orders o
+LEFT JOIN dim_order_status dos ON o.status = dos.id
+WHERE o.shop_id = $1;
 
 -- name: GetOrdersByAdmin :many
-SELECT * FROM orders
-WHERE admin_id = $1;
+SELECT * FROM orders o
+LEFT JOIN dim_order_status dos ON o.status = dos.id
+WHERE o.admin_id = $1;
 
 -- name: GetOrder :one
 SELECT * FROM orders

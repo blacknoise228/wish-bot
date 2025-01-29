@@ -1,5 +1,6 @@
 app:
   environment: stage
+  photos: ./photos
 migrations:
   migrate: true
 postgres:

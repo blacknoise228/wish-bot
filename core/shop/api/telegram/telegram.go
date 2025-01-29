@@ -13,6 +13,7 @@ import (
 type Telegram struct {
 	Bot     *tgbotapi.BotAPI
 	Service *service.Service
+	Config  *config.Config
 }
 
 func NewTelegram(cfg *config.Config, db *db.Queries) *Telegram {
@@ -27,6 +28,7 @@ func NewTelegram(cfg *config.Config, db *db.Queries) *Telegram {
 	return &Telegram{
 		Bot:     bot,
 		Service: service,
+		Config:  cfg,
 	}
 }
 

@@ -47,6 +47,7 @@ func (t *Service) CreateOrder(customerID int64, customerLogin string, wishID int
 		t.sendMessage(customerID, "Ошибка оформления заказа!")
 	}
 	t.sendMessage(customerID, "Заказ успешно оформлен!")
+	t.sendMessage(admin.AdminID, "Поступил заказ! Проверьте ваши заказы!")
 }
 
 func (t *Service) UpdateOrderStatus(chatID int64, orderID uuid.UUID, status int32) {

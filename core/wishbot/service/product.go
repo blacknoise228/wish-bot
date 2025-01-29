@@ -11,7 +11,7 @@ import (
 
 func (s *Service) GetProductsByCategories(chatID int64, categoryID int32) {
 
-	products, err := s.DB.GetProductsByCategory(context.Background(), 2)
+	products, err := s.DB.GetProductsByCategory(context.Background(), categoryID)
 	if err != nil {
 		log.Println(errornator.CustomError("Не удалось получить категорию"))
 		return
@@ -29,14 +29,13 @@ func (s *Service) GetProductsByCategories(chatID int64, categoryID int32) {
 			),
 		)
 		resp := fmt.Sprintf("%v\nОписание: %v\nЦена: %v\nСтатус: %v",
-			product.Name, product.Description, product.Price, product.CategoryName.String)
-		msg := tgbotapi.NewPhoto(chatID, tgbotapi.FileID(product.Image))
+			product.Name, product.Description, product.Price, product.StatusName)
+		msg := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(product.Image))
 		msg.Caption = resp
 		msg.ReplyMarkup = buttons
 		_, err = s.Bot.Send(msg)
 		if err != nil {
-			log.Println("Ошибка при отправке встроенного меню:", err)
+			log.Println("Ошибка при отправке встроенного меню:", errornator.CustomError(err.Error()))
 		}
 	}
-
 }
