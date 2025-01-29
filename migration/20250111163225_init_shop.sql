@@ -95,6 +95,10 @@ create table if not exists "user_info" (
     foreign key (chat_id) references "users" (chat_id)
 );
 
+alter table if exists "wish" add foreign key ("product_id") references "product" ("id");
+
+alter table if exists "wish" add constraint product_id_unique unique (chat_id, product_id);
+
 -- +goose StatementEnd
 
 -- +goose Down
