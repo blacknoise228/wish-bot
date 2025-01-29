@@ -25,7 +25,7 @@ services:
       - "3000:3000"
     restart: always
     volumes:
-      - photos:/photos
+      - photos:/app/photos
       - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro
     command: wishbot
 
@@ -43,7 +43,7 @@ services:
       - "3001:3001"
     restart: always
     volumes:
-      - photos:/photos
+      - photos:/app/photos
       - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro
     command: shop
 
@@ -57,7 +57,5 @@ services:
       - postgresdb
     command: migrate
 
-
 volumes:
-  db_data:   
-  photos: 
+  db_data:
