@@ -1,8 +1,13 @@
 package telegram
 
 import (
+	"fmt"
+	"io"
 	"log"
+	"net/http"
+	"os"
 	"strings"
+	"time"
 	"wish-bot/core/shop/api/telegram/state"
 	"wish-bot/pkg/errornator"
 
@@ -61,7 +66,8 @@ func (t *Telegram) createProductHandler(message *tgbotapi.Message, userstate str
 		state.SetUserState(chatID, state.AddProductImage)
 
 	case state.AddProductImage:
-		userMessageData["image"] = message.Photo[0].FileID
+		photoPath := t.downloadPhoto(message)
+		userMessageData["image"] = photoPath
 		t.Service.Product.CreateProduct(chatID, userMessageData)
 		t.sendInlineMenu(chatID)
 		t.sendMenuButton(chatID)
@@ -108,7 +114,8 @@ func (t *Telegram) updateProductHandler(message *tgbotapi.Message, userstate str
 		state.SetUserState(chatID, state.UpdateProductImage)
 
 	case state.UpdateProductImage:
-		userMessageData["image"] = message.Photo[0].FileID
+		photoPath := t.downloadPhoto(message)
+		userMessageData["image"] = photoPath
 		t.Service.Product.CreateProduct(chatID, userMessageData)
 		t.sendInlineMenu(chatID)
 		t.sendMenuButton(chatID)
@@ -144,4 +151,46 @@ func (t *Telegram) productSelectStatus(chatID int64) {
 		log.Println("Ошибка при отправке встроенного меню:", err)
 		errornator.CustomError(err.Error())
 	}
+}
+func (t *Telegram) downloadPhoto(message *tgbotapi.Message) string {
+	if len(message.Photo) == 0 {
+		return ""
+	}
+
+	photo := message.Photo[len(message.Photo)-1]
+	fileID := photo.FileID
+
+	fileConfig := tgbotapi.FileConfig{FileID: fileID}
+	file, err := t.Bot.GetFile(fileConfig)
+	if err != nil {
+		log.Println("Ошибка при получении информации о файле:", err)
+		return ""
+	}
+
+	downloadURL := fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", t.Bot.Token, file.FilePath)
+
+	// Шаг 4: Скачиваем файл
+	resp, err := http.Get(downloadURL)
+	if err != nil {
+		log.Println("Ошибка при скачивании:", err)
+		return ""
+	}
+	defer resp.Body.Close()
+
+	// Шаг 5: Сохраняем файл локально
+	// Можно придумать свою логику формирования имени файла: UUID, метка времени и т.д.
+	localFileName := fmt.Sprintf("%s/%s.jpg", t.Config.App.Photos, time.Now().Format("20060102_150405"))
+	out, err := os.Create(localFileName)
+	if err != nil {
+		log.Println("Ошибка при создании файла:", err)
+		return ""
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		log.Println("Ошибка при записи файла:", err)
+		return ""
+	}
+	return localFileName
 }

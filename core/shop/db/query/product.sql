@@ -48,3 +48,8 @@ WHERE category_name = $1 LIMIT 1;
 -- name: GetProductStatusByName :one
 SELECT * FROM dim_product_status
 WHERE status_name = $1 LIMIT 1;
+
+-- name: GetProductByID :one
+SELECT * FROM product p
+LEFT JOIN dim_product_status dps ON p.status = dps.id
+WHERE p.id = $1;

@@ -10,6 +10,7 @@ type Config struct {
 
 type App struct {
 	Environment string `yaml:"environment"`
+	Photos      string `yaml:"photos"`
 }
 
 type Postgres struct {

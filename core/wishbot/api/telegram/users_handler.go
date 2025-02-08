@@ -125,6 +125,7 @@ func (t *Telegram) createUserHandlerMessage(ctx context.Context, states string, 
 				return
 			}
 			t.sendMessage(message.Chat.ID, "Пользователь успешно зарегистрирован!")
+			t.sendMenuButton(message.Chat.ID)
 			state.ClearUserState(message.Chat.ID)
 		}
 	}

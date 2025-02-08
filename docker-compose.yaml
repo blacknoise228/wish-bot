@@ -14,7 +14,6 @@ services:
   wishbot:
     image: ghcr.io/blacknoise228/wish-bot:latest
     pull_policy: always
-
     environment:
       - TZ=Asia/Almaty
       - WISHBOT_TELEGRAM_TOKEN=${WISHBOT_TELEGRAM_TOKEN}
@@ -26,6 +25,7 @@ services:
       - "3000:3000"
     restart: always
     volumes:
+      - photos:/app/photos
       - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro
     command: wishbot
 
@@ -43,6 +43,7 @@ services:
       - "3001:3001"
     restart: always
     volumes:
+      - photos:/app/photos
       - /usr/share/zoneinfo/Asia:/usr/share/zoneinfo/Asia:ro
     command: shop
 
@@ -56,6 +57,5 @@ services:
       - postgresdb
     command: migrate
 
-
 volumes:
-  db_data:    
+  db_data:
