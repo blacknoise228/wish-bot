@@ -40,7 +40,10 @@ func (o OrderService) GetAdminOrders(chatID int64) {
 		}
 		buttons := tgbotapi.NewInlineKeyboardMarkup(
 			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Взять в работу", "aprove_order:"+order.ID.String()),
+				tgbotapi.NewInlineKeyboardButtonData("Отправить ссылку на оплату", "paylink_order:"+order.ID.String()),
+			),
+			tgbotapi.NewInlineKeyboardRow(
+				tgbotapi.NewInlineKeyboardButtonData("Подтвердить оплату", "aprove_order:"+order.ID.String()),
 			),
 			tgbotapi.NewInlineKeyboardRow(
 				tgbotapi.NewInlineKeyboardButtonData("Нет в наличии", "cancel_order:"+order.ID.String()),
@@ -84,13 +87,10 @@ func (o OrderService) GetShopOrders(chatID int64) {
 		}
 		buttons := tgbotapi.NewInlineKeyboardMarkup(
 			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Подтвердить оплату", "aprove_order:"+order.ID.String()),
-			),
-			tgbotapi.NewInlineKeyboardRow(
 				tgbotapi.NewInlineKeyboardButtonData("Отправить ссылку на оплату", "paylink_order:"+order.ID.String()),
 			),
 			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Назначить другому администратору", "change_admin_order:"+order.ID.String()),
+				tgbotapi.NewInlineKeyboardButtonData("Подтвердить оплату", "aprove_order:"+order.ID.String()),
 			),
 			tgbotapi.NewInlineKeyboardRow(
 				tgbotapi.NewInlineKeyboardButtonData("Нет в наличии", "cancel_order:"+order.ID.String()),
