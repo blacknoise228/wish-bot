@@ -22,6 +22,7 @@ func (t *Service) CreateWish(chatID int64, productID uuid.UUID, status int32) {
 	})
 	if err != nil {
 		t.sendMessage(chatID, "Ошибка при добавлении желания!")
+		log.Println(errornator.CustomError(err.Error()))
 		return
 	}
 	t.sendMessage(chatID, "Желание добавлено!")
@@ -31,6 +32,7 @@ func (t *Service) GetMyWishes(chatID int64) {
 	wishes, err := t.DB.GetWishesForUser(context.Background(), chatID)
 	if err != nil {
 		t.sendMessage(chatID, "Ошибка при получении желаний")
+		log.Println(errornator.CustomError(err.Error()))
 		return
 	}
 	if len(wishes) == 0 {
@@ -42,7 +44,7 @@ func (t *Service) GetMyWishes(chatID int64) {
 
 		product, err := t.DB.GetProductByID(context.Background(), wish.ProductID)
 		if err != nil {
-			log.Println(err)
+			log.Println(errornator.CustomError(err.Error()))
 		}
 
 		buttons := tgbotapi.NewInlineKeyboardMarkup(
@@ -53,12 +55,12 @@ func (t *Service) GetMyWishes(chatID int64) {
 		)
 		resp := fmt.Sprintf("Имя пользователя: %v\nОписание: %v\nЦена: %v\nСтатус: %v",
 			wish.Username, product.Description, product.Price, wish.StatusName)
-		msg := tgbotapi.NewPhoto(chatID, tgbotapi.FileID(product.Image))
+		msg := tgbotapi.NewPhoto(chatID, tgbotapi.FilePath(product.Image))
 		msg.Caption = resp
 		msg.ReplyMarkup = buttons
 		_, err = t.Bot.Send(msg)
 		if err != nil {
-			log.Println("Ошибка при отправке встроенного меню:", err)
+			log.Println("Ошибка при отправке встроенного меню:", errornator.CustomError(err.Error()))
 		}
 	}
 }
@@ -85,7 +87,7 @@ func (t *Service) GetUserWishes(chatID int64, friendUsername string) {
 	for _, wish := range wishes {
 		product, err := t.DB.GetProductByID(context.Background(), wish.ProductID)
 		if err != nil {
-			log.Println(err)
+			log.Println(errornator.CustomError("Такого товара не существует!" + err.Error()))
 		}
 
 		buttons := tgbotapi.NewInlineKeyboardMarkup(
@@ -100,7 +102,7 @@ func (t *Service) GetUserWishes(chatID int64, friendUsername string) {
 		msg.ReplyMarkup = buttons
 		_, err = t.Bot.Send(msg)
 		if err != nil {
-			log.Println("Ошибка при отправке встроенного меню:", err)
+			log.Println("Ошибка при отправке встроенного меню:", errornator.CustomError(err.Error()))
 		}
 	}
 }
