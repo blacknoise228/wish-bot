@@ -22,6 +22,7 @@ func (t *Service) CreateWish(chatID int64, productID uuid.UUID, status int32) {
 	})
 	if err != nil {
 		t.sendMessage(chatID, "Ошибка при добавлении желания!")
+		return
 	}
 	t.sendMessage(chatID, "Желание добавлено!")
 }
