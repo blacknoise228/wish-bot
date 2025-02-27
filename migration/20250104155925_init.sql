@@ -55,6 +55,14 @@ ALTER TABLE IF EXISTS "friends" ADD FOREIGN KEY ("friend_id") REFERENCES "users"
 -- +goose Down
 -- +goose StatementBegin
 
+ALTER TABLE IF EXISTS "wish" DROP CONSTRAINT IF EXISTS wish_chat_id_fkey;
+
+ALTER TABLE IF EXISTS "wish" DROP CONSTRAINT IF EXISTS wish_status_fkey;
+
+ALTER TABLE IF EXISTS "friends" DROP CONSTRAINT IF EXISTS friends_chat_id_fkey;
+
+ALTER TABLE IF EXISTS "friends" DROP CONSTRAINT IF EXISTS friends_friend_id_fkey;
+
 drop table if exists friends;
 
 drop table if exists wish;

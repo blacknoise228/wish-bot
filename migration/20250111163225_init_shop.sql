@@ -103,6 +103,13 @@ alter table if exists "wish" add constraint product_id_unique unique (chat_id, p
 
 -- +goose Down
 -- +goose StatementBegin
+ALTER TABLE IF EXISTS "wish" DROP CONSTRAINT IF EXISTS wish_product_id_fkey;
+ALTER TABLE IF EXISTS "wish" DROP CONSTRAINT IF EXISTS product_id_unique;
+ALTER TABLE IF EXISTS "orders" DROP CONSTRAINT IF EXISTS orders_product_id_fkey;
+ALTER TABLE IF EXISTS "orders" DROP CONSTRAINT IF EXISTS orders_consignee_id_fkey;
+ALTER TABLE IF EXISTS "orders" DROP CONSTRAINT IF EXISTS orders_status_fkey;
+ALTER TABLE IF EXISTS "orders" DROP CONSTRAINT IF EXISTS orders_admin_id_fkey;
+ALTER TABLE IF EXISTS "user_info" DROP CONSTRAINT IF EXISTS user_info_chat_id_fkey;
 
 drop table if exists "user_info";    
 drop table if exists "orders";
